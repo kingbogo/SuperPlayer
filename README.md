@@ -1,9 +1,9 @@
 # SuperPlayer
 
-  ![Download](https://api.bintray.com/packages/kingbogo/maven/SuperPlayer/images/download.svg)
+   ![Download](https://api.bintray.com/packages/kingbogo/maven/SuperPlayer/images/download.svg)
  
  Android Player
  
  ```
- compile 'com.github.kingbogo:superplayer:{version}'
+ implementation 'com.github.kingbogo:superplayer:{version}'
  ```
