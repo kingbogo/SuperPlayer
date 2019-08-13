@@ -1,8 +1,7 @@
 package com.kingbogo.superplayer.util;
 
+import android.support.annotation.IntDef;
 import android.util.Log;
-
-import androidx.annotation.IntDef;
 
 import com.kingbogo.superplayer.BuildConfig;
 
