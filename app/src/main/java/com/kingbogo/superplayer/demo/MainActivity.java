@@ -2,9 +2,8 @@ package com.kingbogo.superplayer.demo;
 
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.kingbogo.superplayer.listener.SuperPlayerListener;
 import com.kingbogo.superplayer.model.Constants;
