@@ -6,9 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.kingbogo.superplayer.listener.SuperPlayerListener;
-import com.kingbogo.superplayer.model.Constants;
-import com.kingbogo.superplayer.model.PlayerState;
+import com.kingbogo.superplayer.model.SuperConstants;
 import com.kingbogo.superplayer.model.SuperPlayerModel;
+import com.kingbogo.superplayer.model.SuperPlayerState;
 import com.kingbogo.superplayer.util.LogUtil;
 import com.kingbogo.superplayer.view.SuperPlayerView;
 
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.main_play_15_btn:
-                superPlayerView.seek(15 * 1000);
+                superPlayerView.seek(15);
                 break;
 
             case R.id.main_pause_btn:
@@ -161,27 +161,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.main_play_mode_default_btn:
-                superPlayerView.setRenderMode(Constants.REND_MODE_DEFAULT);
+                superPlayerView.setRenderMode(SuperConstants.REND_MODE_DEFAULT);
                 break;
 
             case R.id.main_play_mode_16_9_btn:
-                superPlayerView.setRenderMode(Constants.REND_MODE_16_9);
+                superPlayerView.setRenderMode(SuperConstants.REND_MODE_16_9);
                 break;
 
             case R.id.main_play_mode_4_3_btn:
-                superPlayerView.setRenderMode(Constants.REND_MODE_4_3);
+                superPlayerView.setRenderMode(SuperConstants.REND_MODE_4_3);
                 break;
 
             case R.id.main_play_mode_fit_xy_btn:
-                superPlayerView.setRenderMode(Constants.REND_MODE_FIT_XY);
+                superPlayerView.setRenderMode(SuperConstants.REND_MODE_FIT_XY);
                 break;
 
             case R.id.main_play_mode_original_btn:
-                superPlayerView.setRenderMode(Constants.REND_MODE_ORIGINAL);
+                superPlayerView.setRenderMode(SuperConstants.REND_MODE_ORIGINAL);
                 break;
 
             case R.id.main_play_mode_center_crop_btn:
-                superPlayerView.setRenderMode(Constants.REND_MODE_CENTER_CROP);
+                superPlayerView.setRenderMode(SuperConstants.REND_MODE_CENTER_CROP);
                 break;
 
             default:
@@ -190,9 +190,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onSuperPlayerStateChanged(SuperPlayerModel playerModel, PlayerState playerState) {
+    public void onSuperPlayerStateChanged(SuperPlayerModel playerModel, SuperPlayerState playerState) {
         LogUtil.i("_onSuperPlayerStateChanged(), tag: " + playerModel.tag + ", playerState: " + playerState);
-        if (playerState == PlayerState.PLAYING) {
+        if (playerState == SuperPlayerState.PLAYING) {
             LogUtil.d("开始播放。。。");
         }
     }

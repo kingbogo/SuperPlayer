@@ -2,7 +2,7 @@ package com.kingbogo.superplayer.util;
 
 import android.view.View;
 
-import com.kingbogo.superplayer.model.Constants;
+import com.kingbogo.superplayer.model.SuperConstants;
 
 public class MeasureHelper {
 
@@ -37,29 +37,29 @@ public class MeasureHelper {
 
         //如果设置了比例
         switch (mCurrentRendMode) {
-            case Constants.REND_MODE_ORIGINAL:
+            case SuperConstants.REND_MODE_ORIGINAL:
                 width = mVideoWidth;
                 height = mVideoHeight;
                 break;
-            case Constants.REND_MODE_16_9:
+            case SuperConstants.REND_MODE_16_9:
                 if (height > width / 16 * 9) {
                     height = width / 16 * 9;
                 } else {
                     width = height / 9 * 16;
                 }
                 break;
-            case Constants.REND_MODE_4_3:
+            case SuperConstants.REND_MODE_4_3:
                 if (height > width / 4 * 3) {
                     height = width / 4 * 3;
                 } else {
                     width = height / 3 * 4;
                 }
                 break;
-            case Constants.REND_MODE_FIT_XY:
+            case SuperConstants.REND_MODE_FIT_XY:
                 width = widthMeasureSpec;
                 height = heightMeasureSpec;
                 break;
-            case Constants.REND_MODE_CENTER_CROP:
+            case SuperConstants.REND_MODE_CENTER_CROP:
                 if (mVideoWidth > 0 && mVideoHeight > 0) {
                     if (mVideoWidth * height > width * mVideoHeight) {
                         width = height * mVideoWidth / mVideoHeight;
@@ -68,7 +68,7 @@ public class MeasureHelper {
                     }
                 }
                 break;
-            case Constants.REND_MODE_DEFAULT:
+            case SuperConstants.REND_MODE_DEFAULT:
             default:
                 if (mVideoWidth > 0 && mVideoHeight > 0) {
                     int widthSpecMode = View.MeasureSpec.getMode(widthMeasureSpec);

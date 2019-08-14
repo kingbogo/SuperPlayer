@@ -16,8 +16,8 @@ import com.kingbogo.superplayer.common.IMediaPlayer;
 import com.kingbogo.superplayer.common.IRenderView;
 import com.kingbogo.superplayer.listener.MediaPlayerListener;
 import com.kingbogo.superplayer.listener.SuperPlayerListener;
-import com.kingbogo.superplayer.model.Constants;
-import com.kingbogo.superplayer.model.PlayerState;
+import com.kingbogo.superplayer.model.SuperConstants;
+import com.kingbogo.superplayer.model.SuperPlayerState;
 import com.kingbogo.superplayer.model.SuperPlayerModel;
 import com.kingbogo.superplayer.player.SuperPlayer;
 import com.kingbogo.superplayer.util.CheckUtil;
@@ -41,7 +41,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
 
     private SuperPlayerModel mCurrentPlayerModel;
 
-    private PlayerState mCurrentPlayState = PlayerState.IDLE;
+    private SuperPlayerState mCurrentPlayState = SuperPlayerState.IDLE;
 
     private ProgressRunnable mProgressRunnable;
 
@@ -86,7 +86,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     public void playWithModel(SuperPlayerModel playerModel) {
         if (playerModel == null || CheckUtil.isEmpty(playerModel.url)) {
             LogUtil.w("_playWithModel(), playerModel is null OR playerModel.url is null...");
-            setPlayState(PlayerState.ERROR);
+            setPlayState(SuperPlayerState.ERROR);
             return;
         }
         mCurrentPlayerModel = playerModel;
@@ -100,7 +100,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
         setRenderMode(playerModel.renderMode);
         // play
         mMediaPlayer.startPlay(playerModel.url);
-        setPlayState(PlayerState.PREPARING);
+        setPlayState(SuperPlayerState.PREPARING);
         // progress callback
         postProgressRunnable();
     }
@@ -122,9 +122,16 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     }
 
     /**
-     * 设置进度。单位：ms
+     * 设置进度。单位：s
      */
     public void seek(long seekTime) {
+        seek4Ms(seekTime * 1000L);
+    }
+
+    /**
+     * 设置进度。单位：ms
+     */
+    public void seek4Ms(long seekTime) {
         if (mMediaPlayer != null) {
             mMediaPlayer.seekTo(seekTime);
             mMediaPlayer.resume();
@@ -137,7 +144,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     public void resume() {
         if (mMediaPlayer != null) {
             mMediaPlayer.resume();
-            setPlayState(PlayerState.PLAYING);
+            setPlayState(SuperPlayerState.PLAYING);
         }
     }
 
@@ -147,7 +154,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     public void pause() {
         if (mMediaPlayer != null) {
             mMediaPlayer.pause();
-            setPlayState(PlayerState.PAUSED);
+            setPlayState(SuperPlayerState.PAUSED);
         }
     }
 
@@ -158,7 +165,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
      */
     public void stopPlay(boolean isClearFrame) {
         stop(isClearFrame);
-        setPlayState(PlayerState.STOPPED);
+        setPlayState(SuperPlayerState.STOPPED);
         if (isClearFrame) {
             setVisibility(GONE);
             releaseRenderView();
@@ -269,7 +276,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     /**
      * @return 获取当前播放状态
      */
-    public PlayerState getPlayState() {
+    public SuperPlayerState getPlayState() {
         return mCurrentPlayState;
     }
 
@@ -363,7 +370,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
         }
     }
 
-    private void setPlayState(PlayerState playState) {
+    private void setPlayState(SuperPlayerState playState) {
         if (mCurrentPlayState != playState) {
             mCurrentPlayState = playState;
             SuperPlayerListener playerListener = getSuperPlayerListener();
@@ -417,13 +424,13 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
 
     @Override
     public void onInfo(int what, int extra) {
-        if (what == Constants.MEDIA_INFO_BUFFERING_START) {
-            setPlayState(PlayerState.BUFFERING);
-        } else if (what == Constants.MEDIA_INFO_BUFFERING_END) {
-            setPlayState(PlayerState.BUFFERED);
-        } else if (what == Constants.MEDIA_INFO_VIDEO_RENDER_START) {
-            setPlayState(PlayerState.PLAYING);
-        } else if (what == Constants.MEDIA_INFO_VIDEO_ROTATION_CHANGED) {
+        if (what == SuperConstants.MEDIA_INFO_BUFFERING_START) {
+            setPlayState(SuperPlayerState.BUFFERING);
+        } else if (what == SuperConstants.MEDIA_INFO_BUFFERING_END) {
+            setPlayState(SuperPlayerState.BUFFERED);
+        } else if (what == SuperConstants.MEDIA_INFO_VIDEO_RENDER_START) {
+            setPlayState(SuperPlayerState.PLAYING);
+        } else if (what == SuperConstants.MEDIA_INFO_VIDEO_ROTATION_CHANGED) {
             if (mRenderView != null) {
                 mRenderView.setVideoRotation(extra);
             }
@@ -432,7 +439,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
 
     @Override
     public void onPrepared() {
-        setPlayState(PlayerState.PREPARED);
+        setPlayState(SuperPlayerState.PREPARED);
         if (mCurrentPlayerModel != null && mCurrentPlayerModel.startPlayPosition > 0) {
             seek(mCurrentPlayerModel.startPlayPosition);
         }
@@ -440,7 +447,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
 
     @Override
     public void onCompletion() {
-        setPlayState(PlayerState.COMPLETED);
+        setPlayState(SuperPlayerState.COMPLETED);
         if (mCurrentPlayerModel != null && mCurrentPlayerModel.isGoneAfterComplete) {
             setVisibility(GONE);
         }
@@ -449,7 +456,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
 
     @Override
     public void onError() {
-        setPlayState(PlayerState.ERROR);
+        setPlayState(SuperPlayerState.ERROR);
         removeProgressRunnable();
     }
 
@@ -470,16 +477,16 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
         @Override
         public void run() {
             if (mCurrentPlayerModel != null && mMediaPlayer != null) {
-                if (mCurrentPlayState == PlayerState.PREPARING || mCurrentPlayState == PlayerState.PREPARED
-                        || mCurrentPlayState == PlayerState.PLAYING || mCurrentPlayState == PlayerState.PAUSED
-                        || mCurrentPlayState == PlayerState.BUFFERING || mCurrentPlayState == PlayerState.BUFFERED) {
+                if (mCurrentPlayState == SuperPlayerState.PREPARING || mCurrentPlayState == SuperPlayerState.PREPARED
+                        || mCurrentPlayState == SuperPlayerState.PLAYING || mCurrentPlayState == SuperPlayerState.PAUSED
+                        || mCurrentPlayState == SuperPlayerState.BUFFERING || mCurrentPlayState == SuperPlayerState.BUFFERED) {
                     long currentDuration = mMediaPlayer.getCurrentDuration();
                     long totalDuration = mMediaPlayer.getTotalDuration();
                     if (totalDuration > 0) {
                         setPlayProgressCallback();
                     }
                     long delayMillis = 1000;
-                    if (mCurrentPlayState != PlayerState.PAUSED) {
+                    if (mCurrentPlayState != SuperPlayerState.PAUSED) {
                         delayMillis = 1000 - (currentDuration % 1000);
                     }
                     postDelayed(mProgressRunnable, delayMillis);

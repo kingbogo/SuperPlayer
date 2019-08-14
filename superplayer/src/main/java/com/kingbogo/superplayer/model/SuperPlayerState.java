@@ -10,7 +10,7 @@ package com.kingbogo.superplayer.model;
  * @author Kingbo
  * @date 2019/8/12
  */
-public enum PlayerState {
+public enum SuperPlayerState {
 
     ERROR(-1, "错误"),
     IDLE(0, "空闲"),
@@ -26,14 +26,14 @@ public enum PlayerState {
     private int stateCode;
     private String stateName;
 
-    PlayerState(int stateCode, String stateName) {
+    SuperPlayerState(int stateCode, String stateName) {
         this.stateCode = stateCode;
         this.stateName = stateName;
     }
 
-    public static PlayerState valueOfStateCode(int stateCode) {
-        PlayerState[] playerStateArray = values();
-        for (PlayerState playerState : playerStateArray) {
+    public static SuperPlayerState valueOfStateCode(int stateCode) {
+        SuperPlayerState[] playerStateArray = values();
+        for (SuperPlayerState playerState : playerStateArray) {
             if (playerState.getStateCode() == stateCode) {
                 return playerState;
             }

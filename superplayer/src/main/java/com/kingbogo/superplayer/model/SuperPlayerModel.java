@@ -44,7 +44,7 @@ public class SuperPlayerModel {
     /**
      * 默认播放填充模式 （默认播放模式为: 自适应模式 ） <br/>
      */
-    public int renderMode = Constants.REND_MODE_DEFAULT;
+    public int renderMode = SuperConstants.REND_MODE_DEFAULT;
 
     /**
      * 是否需要进度回调

@@ -8,7 +8,7 @@ package com.kingbogo.superplayer.model;
  * @author Kingbo
  * @date 2019/8/8
  */
-public final class Constants {
+public final class SuperConstants {
 
     // ------------------------------------------------------- @ rend mode
 

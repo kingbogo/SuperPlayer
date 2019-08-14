@@ -17,7 +17,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoListener;
 import com.kingbogo.superplayer.common.IMediaPlayer;
 import com.kingbogo.superplayer.listener.MediaPlayerListener;
-import com.kingbogo.superplayer.model.Constants;
+import com.kingbogo.superplayer.model.SuperConstants;
 
 /**
  * <p>
@@ -255,7 +255,7 @@ public class SuperPlayer implements IMediaPlayer, Player.EventListener, VideoLis
 
         if (mIsBuffering) {
             if (playbackState == Player.STATE_READY || playbackState == Player.STATE_ENDED) {
-                notifyOnInfo(Constants.MEDIA_INFO_BUFFERING_END, mPlayer.getBufferedPercentage());
+                notifyOnInfo(SuperConstants.MEDIA_INFO_BUFFERING_END, mPlayer.getBufferedPercentage());
                 mIsBuffering = false;
             }
         }
@@ -263,7 +263,7 @@ public class SuperPlayer implements IMediaPlayer, Player.EventListener, VideoLis
         if (mIsPreparing) {
             if (playbackState == Player.STATE_READY) {
                 notifyOnPrepared();
-                notifyOnInfo(Constants.MEDIA_INFO_VIDEO_RENDER_START, 0);
+                notifyOnInfo(SuperConstants.MEDIA_INFO_VIDEO_RENDER_START, 0);
                 mIsPreparing = false;
             }
         }
@@ -272,7 +272,7 @@ public class SuperPlayer implements IMediaPlayer, Player.EventListener, VideoLis
             case Player.STATE_IDLE:
                 break;
             case Player.STATE_BUFFERING:
-                notifyOnInfo(Constants.MEDIA_INFO_BUFFERING_START, mPlayer.getBufferedPercentage());
+                notifyOnInfo(SuperConstants.MEDIA_INFO_BUFFERING_START, mPlayer.getBufferedPercentage());
                 mIsBuffering = true;
                 break;
             case Player.STATE_READY:
@@ -301,7 +301,7 @@ public class SuperPlayer implements IMediaPlayer, Player.EventListener, VideoLis
         mVideoHeight = height;
         notifyOnVideoSizeChanged(width, height);
         if (unappliedRotationDegrees > 0) {
-            notifyOnInfo(Constants.MEDIA_INFO_VIDEO_ROTATION_CHANGED, unappliedRotationDegrees);
+            notifyOnInfo(SuperConstants.MEDIA_INFO_VIDEO_ROTATION_CHANGED, unappliedRotationDegrees);
         }
     }
 

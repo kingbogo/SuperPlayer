@@ -1,6 +1,6 @@
 package com.kingbogo.superplayer.listener;
 
-import com.kingbogo.superplayer.model.PlayerState;
+import com.kingbogo.superplayer.model.SuperPlayerState;
 import com.kingbogo.superplayer.model.SuperPlayerModel;
 
 /**
@@ -19,7 +19,7 @@ public interface SuperPlayerListener {
      * @param playerModel 播放对象
      * @param playerState 播放器状态
      */
-    void onSuperPlayerStateChanged(SuperPlayerModel playerModel, PlayerState playerState);
+    void onSuperPlayerStateChanged(SuperPlayerModel playerModel, SuperPlayerState playerState);
 
     /**
      * 进度回调
