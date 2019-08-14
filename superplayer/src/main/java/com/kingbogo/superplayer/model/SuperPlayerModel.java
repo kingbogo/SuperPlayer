@@ -46,6 +46,11 @@ public class SuperPlayerModel {
      */
     public int renderMode = Constants.REND_MODE_DEFAULT;
 
+    /**
+     * 是否需要进度回调
+     */
+    public boolean isNeedProgressCallback = false;
+
     /** 播放事件 */
     private WeakReference<SuperPlayerListener> playerListener;
 

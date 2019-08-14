@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.main_play_2_btn:
                 SuperPlayerModel playerModel2 = new SuperPlayerModel(URL_2);
                 playerModel2.tag = "Test2";
+                playerModel2.isNeedProgressCallback = true;
                 playerModel2.setPlayerListener(this);
                 superPlayerView.playWithModel(playerModel2);
                 break;
@@ -126,11 +127,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.main_stop_btn:
-                superPlayerView.stopPlay();
+                superPlayerView.stopPlay(false);
                 break;
 
             case R.id.main_stop_clear_btn:
-                superPlayerView.stopPlayAndClearFrame();
+                superPlayerView.stopPlay(true);
                 break;
 
             case R.id.main_replay_btn:
@@ -191,7 +192,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onSuperPlayerStateChanged(SuperPlayerModel playerModel, PlayerState playerState) {
         LogUtil.i("_onSuperPlayerStateChanged(), tag: " + playerModel.tag + ", playerState: " + playerState);
-
+        if (playerState == PlayerState.PLAYING) {
+            LogUtil.d("开始播放。。。");
+        }
     }
 
+    @Override
+    public void onSuperPlayerProgress(SuperPlayerModel playerModel, long currentDuration, long totalDuration) {
+        LogUtil.v("_onSuperPlayerProgress(), tag: " + playerModel.tag + ", currentDuration: " + currentDuration + ", totalDuration: " + totalDuration);
+    }
 }

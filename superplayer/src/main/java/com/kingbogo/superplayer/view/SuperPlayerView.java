@@ -43,6 +43,8 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
 
     private PlayerState mCurrentPlayState = PlayerState.IDLE;
 
+    private ProgressRunnable mProgressRunnable;
+
     public SuperPlayerView(@NonNull Context context) {
         this(context, null);
     }
@@ -99,6 +101,8 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
         // play
         mMediaPlayer.startPlay(playerModel.url);
         setPlayState(PlayerState.PREPARING);
+        // progress callback
+        postProgressRunnable();
     }
 
     /**
@@ -149,18 +153,16 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
 
     /**
      * 停止播放
+     *
+     * @param isClearFrame 清除帖画面
      */
-    public void stopPlay() {
-        stop(false);
-    }
-
-    /**
-     * 停止播放，清除最后一帖
-     */
-    public void stopPlayAndClearFrame() {
-        stop(true);
-        setVisibility(GONE);
-        releaseRenderView();
+    public void stopPlay(boolean isClearFrame) {
+        stop(isClearFrame);
+        setPlayState(PlayerState.STOPPED);
+        if (isClearFrame) {
+            setVisibility(GONE);
+            releaseRenderView();
+        }
     }
 
     /**
@@ -357,8 +359,8 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
         if (mMediaPlayer != null) {
             mMediaPlayer.setMediaPlayerListener(null);
             mMediaPlayer.stop(clearFrame);
+            removeProgressRunnable();
         }
-        setPlayState(PlayerState.IDLE);
     }
 
     private void setPlayState(PlayerState playState) {
@@ -367,6 +369,15 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
             SuperPlayerListener playerListener = getSuperPlayerListener();
             if (playerListener != null) {
                 playerListener.onSuperPlayerStateChanged(mCurrentPlayerModel, playState);
+            }
+        }
+    }
+
+    private void setPlayProgressCallback() {
+        if (mCurrentPlayerModel != null && mMediaPlayer != null) {
+            SuperPlayerListener playerListener = getSuperPlayerListener();
+            if (playerListener != null) {
+                playerListener.onSuperPlayerProgress(mCurrentPlayerModel, mMediaPlayer.getCurrentDuration(), mMediaPlayer.getTotalDuration());
             }
         }
     }
@@ -383,6 +394,22 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
             mPlayerContainerView.removeView(mRenderView.getRendView());
             mRenderView.release();
             mRenderView = null;
+        }
+    }
+
+    private void postProgressRunnable() {
+        if (mCurrentPlayerModel != null && mCurrentPlayerModel.isNeedProgressCallback) {
+            if (mProgressRunnable == null) {
+                mProgressRunnable = new ProgressRunnable();
+            }
+            removeProgressRunnable();
+            post(mProgressRunnable);
+        }
+    }
+
+    private void removeProgressRunnable() {
+        if (mProgressRunnable != null) {
+            removeCallbacks(mProgressRunnable);
         }
     }
 
@@ -417,11 +444,13 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
         if (mCurrentPlayerModel != null && mCurrentPlayerModel.isGoneAfterComplete) {
             setVisibility(GONE);
         }
+        removeProgressRunnable();
     }
 
     @Override
     public void onError() {
         setPlayState(PlayerState.ERROR);
+        removeProgressRunnable();
     }
 
     @Override
@@ -429,6 +458,34 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
         if (mRenderView != null) {
             mRenderView.setRenderMode(mCurrentPlayerModel.renderMode);
             mRenderView.setVideoSize(width, height);
+        }
+    }
+
+    // ------------------------------------------------------------- @.@
+
+    /**
+     * ProgressRunnable
+     */
+    private class ProgressRunnable implements Runnable {
+        @Override
+        public void run() {
+            if (mCurrentPlayerModel != null && mMediaPlayer != null) {
+                if (mCurrentPlayState == PlayerState.PREPARING || mCurrentPlayState == PlayerState.PREPARED
+                        || mCurrentPlayState == PlayerState.PLAYING || mCurrentPlayState == PlayerState.PAUSED
+                        || mCurrentPlayState == PlayerState.BUFFERING || mCurrentPlayState == PlayerState.BUFFERED) {
+                    long currentDuration = mMediaPlayer.getCurrentDuration();
+                    long totalDuration = mMediaPlayer.getTotalDuration();
+                    if (totalDuration > 0) {
+                        setPlayProgressCallback();
+                    }
+
+                    long delayMillis = 1000;
+                    if (mCurrentPlayState != PlayerState.PAUSED) {
+                        delayMillis = 1000 - (currentDuration % 1000);
+                    }
+                    postDelayed(mProgressRunnable, delayMillis);
+                }
+            }
         }
     }
 

@@ -21,4 +21,13 @@ public interface SuperPlayerListener {
      */
     void onSuperPlayerStateChanged(SuperPlayerModel playerModel, PlayerState playerState);
 
+    /**
+     * 进度回调
+     *
+     * @param playerModel     播放对象
+     * @param currentDuration 当前进度，单位：ms
+     * @param totalDuration   总时长，单位：ms
+     */
+    void onSuperPlayerProgress(SuperPlayerModel playerModel, long currentDuration, long totalDuration);
+
 }
