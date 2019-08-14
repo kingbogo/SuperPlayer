@@ -478,7 +478,6 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
                     if (totalDuration > 0) {
                         setPlayProgressCallback();
                     }
-
                     long delayMillis = 1000;
                     if (mCurrentPlayState != PlayerState.PAUSED) {
                         delayMillis = 1000 - (currentDuration % 1000);
