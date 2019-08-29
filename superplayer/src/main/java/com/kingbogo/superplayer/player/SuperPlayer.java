@@ -151,7 +151,8 @@ public class SuperPlayer implements IMediaPlayer, Player.EventListener, VideoLis
             return false;
         }
         int playState = mPlayer.getPlaybackState();
-        return playState == Player.STATE_BUFFERING || playState == Player.STATE_READY;
+        // return playState == Player.STATE_BUFFERING || playState == Player.STATE_READY;
+        return playState == Player.STATE_BUFFERING;
     }
 
     @Override
@@ -237,6 +238,14 @@ public class SuperPlayer implements IMediaPlayer, Player.EventListener, VideoLis
     @Override
     public void setMediaPlayerListener(MediaPlayerListener playerListener) {
         mPlayerListener = playerListener;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        if (mPlayer == null) {
+            return 0;
+        }
+        return mPlayer.getAudioSessionId();
     }
 
     // -------------------------------------------------------- @ Player.EventListener

@@ -58,4 +58,6 @@ public interface IMediaPlayer {
 
     void setMediaPlayerListener(MediaPlayerListener playerListener);
 
+    int getAudioSessionId();
+
 }

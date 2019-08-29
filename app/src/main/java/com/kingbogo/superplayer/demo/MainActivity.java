@@ -1,9 +1,9 @@
 package com.kingbogo.superplayer.demo;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import com.kingbogo.superplayer.listener.SuperPlayerListener;
 import com.kingbogo.superplayer.model.SuperConstants;
@@ -15,13 +15,15 @@ import com.kingbogo.superplayer.view.SuperPlayerView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SuperPlayerListener {
 
-    private static final String URL_1 = "http://vfx.mtime.cn/Video/2019/02/04/mp4/190204084208765161.mp4";
-    private static final String URL_2 = "http://vfx.mtime.cn/Video/2019/03/21/mp4/190321153853126488.mp4";
-    private static final String URL_3 = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319212559089721.mp4";
-    private static final String URL_4 = "http://vfx.mtime.cn/Video/2019/03/18/mp4/190318231014076505.mp4";
-    private static final String URL_5 = "http://vfx.mtime.cn/Video/2019/03/18/mp4/190318214226685784.mp4";
+    public static final String URL_1 = "http://vfx.mtime.cn/Video/2019/02/04/mp4/190204084208765161.mp4";
+    public static final String URL_2 = "http://vfx.mtime.cn/Video/2019/03/21/mp4/190321153853126488.mp4";
+    public static final String URL_3 = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319212559089721.mp4";
+    public static final String URL_4 = "http://vfx.mtime.cn/Video/2019/03/18/mp4/190318231014076505.mp4";
+    public static final String URL_5 = "http://vfx.mtime.cn/Video/2019/03/18/mp4/190318214226685784.mp4";
 
     private SuperPlayerView superPlayerView;
+
+//    private Fragment1 fragment1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.main_play_mode_fit_xy_btn).setOnClickListener(this);
         findViewById(R.id.main_play_mode_original_btn).setOnClickListener(this);
         findViewById(R.id.main_play_mode_center_crop_btn).setOnClickListener(this);
+
+        findViewById(R.id.main_play_is_playing_btn).setOnClickListener(this);
+        findViewById(R.id.main_play_fragment_btn).setOnClickListener(this);
+
+//        fragment1 = Fragment1.newInstance("Fragment中播放");
+//        getSupportFragmentManager().beginTransaction().add(R.id.main_container, fragment1).commit();
+
     }
 
     @Override
@@ -97,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.main_play_3_btn:
                 SuperPlayerModel playerModel3 = new SuperPlayerModel(URL_3);
                 playerModel3.tag = "Test3";
-                playerModel3.startPlayPosition = 20 * 1000;
+                playerModel3.startPlayPositionMs = 20 * 1000;
                 playerModel3.isPauseAfterLockScreen = false;
                 playerModel3.isGoneAfterComplete = true;
                 playerModel3.setPlayerListener(this);
@@ -110,8 +119,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.main_play_local_btn:
                 // 请自行处理"动态权限"
-                String url = Environment.getExternalStorageDirectory().getAbsolutePath() + "/download/AAA.mp4";
-                superPlayerView.playWithModel(new SuperPlayerModel(url));
+//                String url = Environment.getExternalStorageDirectory().getAbsolutePath() + "/download/bh_1_1.mp4";
+
+//                String url = getExternalCacheDir().getAbsolutePath() + "/bh_1_1.mp4";
+
+                String url = "/data/data/com.kingbogo.superplayer.demo/cache/bh_1_1.mp4";
+
+                LogUtil.d("url ===> " + url);
+
+                SuperPlayerModel model = new SuperPlayerModel(url);
+                model.isLoop = true;
+                superPlayerView.playWithModel(model);
                 break;
 
             case R.id.main_play_15_btn:
@@ -120,6 +138,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.main_pause_btn:
                 superPlayerView.pause();
+                int audionSessonId = superPlayerView.getAudioSessionId();
+                LogUtil.d("audionSessonId => " + audionSessonId);
                 break;
 
             case R.id.main_resume_btn:
@@ -184,6 +204,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 superPlayerView.setRenderMode(SuperConstants.REND_MODE_CENTER_CROP);
                 break;
 
+            case R.id.main_play_is_playing_btn:
+                boolean isPlaying = superPlayerView.isPlaying();
+                String logInfo = "isPlaying: " + isPlaying;
+                LogUtil.i(logInfo);
+                toast(logInfo);
+                break;
+
+//            case R.id.main_play_fragment_btn:
+//                fragment1.play();
+//                break;
+
             default:
                 break;
         }
@@ -200,5 +231,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onSuperPlayerProgress(SuperPlayerModel playerModel, long currentDuration, long totalDuration) {
         LogUtil.v("_onSuperPlayerProgress(), tag: " + playerModel.tag + ", currentDuration: " + currentDuration + ", totalDuration: " + totalDuration);
+    }
+
+    private void toast(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
 }

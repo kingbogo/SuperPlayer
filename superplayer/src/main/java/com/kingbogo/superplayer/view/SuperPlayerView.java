@@ -17,8 +17,8 @@ import com.kingbogo.superplayer.common.IRenderView;
 import com.kingbogo.superplayer.listener.MediaPlayerListener;
 import com.kingbogo.superplayer.listener.SuperPlayerListener;
 import com.kingbogo.superplayer.model.SuperConstants;
-import com.kingbogo.superplayer.model.SuperPlayerState;
 import com.kingbogo.superplayer.model.SuperPlayerModel;
+import com.kingbogo.superplayer.model.SuperPlayerState;
 import com.kingbogo.superplayer.player.SuperPlayer;
 import com.kingbogo.superplayer.util.CheckUtil;
 import com.kingbogo.superplayer.util.LogUtil;
@@ -32,6 +32,8 @@ import com.kingbogo.superplayer.util.LogUtil;
  * @date 2019/8/12
  */
 public class SuperPlayerView extends FrameLayout implements MediaPlayerListener {
+
+    private static final String TAG = "SuperPlayerView";
 
     private FrameLayout mPlayerContainerView;
     private ImageView mHolderIv;
@@ -84,6 +86,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
      * 播放（点播）
      */
     public void playWithModel(SuperPlayerModel playerModel) {
+        LogUtil.v(TAG, "_playWithModel()......");
         if (playerModel == null || CheckUtil.isEmpty(playerModel.url)) {
             LogUtil.w("_playWithModel(), playerModel is null OR playerModel.url is null...");
             setPlayState(SuperPlayerState.ERROR);
@@ -109,6 +112,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
      * 重播
      */
     public void replay() {
+        LogUtil.v(TAG, "_replay()......");
         playWithModel(mCurrentPlayerModel);
     }
 
@@ -238,7 +242,13 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
      */
     public boolean isPlaying() {
         if (mMediaPlayer != null) {
-            return mMediaPlayer.isPlaying();
+            if (mMediaPlayer.isPlaying()) {
+                return true;
+            } else if (mCurrentPlayState != null) {
+                return mCurrentPlayState == SuperPlayerState.PREPARING || mCurrentPlayState == SuperPlayerState.PREPARED
+                        || mCurrentPlayState == SuperPlayerState.PLAYING || mCurrentPlayState == SuperPlayerState.BUFFERING
+                        || mCurrentPlayState == SuperPlayerState.BUFFERED;
+            }
         }
         return false;
     }
@@ -320,6 +330,16 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     public int getVideoHeight() {
         if (mMediaPlayer != null) {
             return mMediaPlayer.getHeight();
+        }
+        return 0;
+    }
+
+    /**
+     * 音频会话ID
+     */
+    public int getAudioSessionId() {
+        if (mMediaPlayer != null) {
+            return mMediaPlayer.getAudioSessionId();
         }
         return 0;
     }
@@ -440,8 +460,8 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     @Override
     public void onPrepared() {
         setPlayState(SuperPlayerState.PREPARED);
-        if (mCurrentPlayerModel != null && mCurrentPlayerModel.startPlayPosition > 0) {
-            seek(mCurrentPlayerModel.startPlayPosition);
+        if (mCurrentPlayerModel != null && mCurrentPlayerModel.startPlayPositionMs > 0) {
+            seek4Ms(mCurrentPlayerModel.startPlayPositionMs);
         }
     }
 

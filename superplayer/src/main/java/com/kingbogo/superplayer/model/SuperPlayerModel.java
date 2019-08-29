@@ -22,6 +22,9 @@ public class SuperPlayerModel {
     /** 标识 */
     public String tag;
 
+    /** id */
+    public int id;
+
     /** 占位图 */
     @DrawableRes
     public int holderImageResId;
@@ -38,8 +41,8 @@ public class SuperPlayerModel {
     /** 锁屏是否 暂停 */
     public boolean isPauseAfterLockScreen = true;
 
-    /** 开始播放的位置.单位：毫秒 */
-    public long startPlayPosition = 0;
+    /** 开始播放的位置.单位：ms */
+    public long startPlayPositionMs = 0;
 
     /**
      * 默认播放填充模式 （默认播放模式为: 自适应模式 ） <br/>
@@ -86,8 +89,8 @@ public class SuperPlayerModel {
         return "SuperPlayerModel{" +
                 "url='" + url + '\'' +
                 ", tag='" + tag + '\'' +
+                ", id=" + id +
                 ", renderMode=" + renderMode +
                 '}';
     }
-
 }
