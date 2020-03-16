@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="super_white">#ffffffff</color>
+    <color name="super_black">#ff000000</color>
+    <color name="super_transparent">#00000000</color>
+    <color name="super_theme_color">#D74545</color>
+    <color name="super_theme_color_transparent">#99D74545</color>
+    <color name="super_controller_bg_color">#96000000</color>
+</resources>

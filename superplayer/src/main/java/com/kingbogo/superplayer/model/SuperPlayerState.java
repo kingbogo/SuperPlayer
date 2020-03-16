@@ -14,13 +14,18 @@ public enum SuperPlayerState {
 
     ERROR(-1, "错误"),
     IDLE(0, "空闲"),
+
     PREPARING(1, "准备中"),
     PREPARED(2, "已准备"),
     PLAYING(3, "播放中"),
+
     PAUSED(4, "暂停"),
+
     COMPLETED(5, "已完成"),
+
     BUFFERING(6, "缓冲中"),
     BUFFERED(7, "已缓冲"),
+
     STOPPED(8, "停止");
 
     private int stateCode;

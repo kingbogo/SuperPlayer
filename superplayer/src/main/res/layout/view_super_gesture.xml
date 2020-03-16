@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="160dp"
+    android:layout_height="120dp"
+    android:background="@drawable/super_bg_gesture"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/super_gesture_icon_iv"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        tools:src="@drawable/super_ic_action_volume_up"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/super_gesture_percent_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        tools:text="100" />
+
+    <ProgressBar
+        android:id="@+id/super_gesture_percent_pb"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="100dp"
+        android:layout_height="3dp"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/super_img_progress_bar" />
+
+</LinearLayout>

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.kingbogo.superplayer.demo.util.Constants;
 import com.kingbogo.superplayer.model.SuperPlayerModel;
 import com.kingbogo.superplayer.view.SuperPlayerView;
 
@@ -79,7 +80,7 @@ public class Fragment1 extends Fragment {
 
     public void play() {
 //        String url = "/data/data/com.kingbogo.superplayer.demo/cache/bh_1_1.mp4";
-        SuperPlayerModel model = new SuperPlayerModel(MainActivity.URL_5);
+        SuperPlayerModel model = new SuperPlayerModel(Constants.VIDEO_URL_4);
         model.isLoop = true;
         mSuperPlayer.playWithModel(model);
     }

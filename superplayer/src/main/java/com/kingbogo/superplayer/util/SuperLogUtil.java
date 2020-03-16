@@ -19,10 +19,10 @@ import java.util.Locale;
  * @author Kingbo
  * @date 2018/10/20
  */
-public final class LogUtil {
+public final class SuperLogUtil {
 
     private static boolean LOG_DEBUG = BuildConfig.DEBUG;
-    private static final String TAG_PREFIX = "SP";
+    private static final String TAG_PREFIX = "Super";
     private static final int MAX_LEN = 4000;
 
     private static final int V = Log.VERBOSE;
@@ -36,7 +36,14 @@ public final class LogUtil {
     @interface TYPE {
     }
 
-    private LogUtil() {
+    /**
+     * 是否日志开关
+     */
+    public static void enableLog(boolean enable) {
+        LOG_DEBUG = enable;
+    }
+
+    private SuperLogUtil() {
     }
 
     private static String generateTag(StackTraceElement caller) {

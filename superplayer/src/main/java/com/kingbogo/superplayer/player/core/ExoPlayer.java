@@ -1,4 +1,4 @@
-package com.kingbogo.superplayer.player;
+package com.kingbogo.superplayer.player.core;
 
 import android.content.Context;
 import android.net.Uri;
@@ -15,19 +15,22 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoListener;
-import com.kingbogo.superplayer.common.IMediaPlayer;
+import com.kingbogo.superplayer.common.IPlayer;
 import com.kingbogo.superplayer.listener.MediaPlayerListener;
 import com.kingbogo.superplayer.model.SuperConstants;
+import com.kingbogo.superplayer.util.SuperLogUtil;
 
 /**
  * <p>
- * 超级播放器
+ * Exo播放器
  * </p>
  *
  * @author Kingbo
  * @date 2019/8/9
  */
-public class SuperPlayer implements IMediaPlayer, Player.EventListener, VideoListener {
+public class ExoPlayer implements IPlayer, Player.EventListener, VideoListener {
+
+    private static final String TAG = "ExoPlayer";
 
     private Context mContext;
     private SimpleExoPlayer mPlayer;
@@ -50,7 +53,7 @@ public class SuperPlayer implements IMediaPlayer, Player.EventListener, VideoLis
      *
      * @param context 上下文
      */
-    public SuperPlayer(Context context) {
+    public ExoPlayer(Context context) {
         mContext = context.getApplicationContext();
         mLastPlaybackState = Player.STATE_IDLE;
     }
@@ -189,6 +192,14 @@ public class SuperPlayer implements IMediaPlayer, Player.EventListener, VideoLis
     }
 
     @Override
+    public int getBufferedPercentage() {
+        if (mPlayer == null) {
+            return 0;
+        }
+        return mPlayer.getBufferedPercentage();
+    }
+
+    @Override
     public void reset() {
         release();
         initPlayer();
@@ -299,7 +310,8 @@ public class SuperPlayer implements IMediaPlayer, Player.EventListener, VideoLis
 
     @Override
     public void onPlayerError(ExoPlaybackException error) {
-        notifyOnError();
+        SuperLogUtil.e(TAG, error);
+        notifyOnError(error.type);
     }
 
     // -------------------------------------------------------- @ VideoListener
@@ -338,9 +350,9 @@ public class SuperPlayer implements IMediaPlayer, Player.EventListener, VideoLis
         }
     }
 
-    private void notifyOnError() {
+    private void notifyOnError(int errorCode) {
         if (mPlayerListener != null) {
-            mPlayerListener.onError();
+            mPlayerListener.onError(errorCode);
         }
     }
 

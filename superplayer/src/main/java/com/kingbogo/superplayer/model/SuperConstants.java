@@ -41,4 +41,15 @@ public final class SuperConstants {
     /** MediaInfo：渲染开始 */
     public static final int MEDIA_INFO_VIDEO_RENDER_START = 4;
 
+    // ------------------------------------------------------- @ MediaQueueMode
+
+    /** 队列模式：列表循环 */
+    public static final int MEDIA_QUEUE_MODE_LIST_LOOP = 0;
+    /** 队列模式：列表一次 */
+    public static final int MEDIA_QUEUE_MODE_LIST_SINGLE = 1;
+    /** 队列模式：单曲循环 */
+    public static final int MEDIA_QUEUE_MODE_SINGLE_LOOP = 2;
+    /** 队列模式：单曲模式 */
+    public static final int MEDIA_QUEUE_MODE_SINGLE_ONCE = 3;
+
 }

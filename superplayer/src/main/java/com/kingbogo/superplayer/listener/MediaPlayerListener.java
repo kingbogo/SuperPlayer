@@ -15,7 +15,7 @@ public interface MediaPlayerListener {
 
     void onCompletion();
 
-    void onError();
+    void onError(int errorCode);
 
     void onVideoSizeChanged(int width, int height);
 

@@ -12,7 +12,7 @@ import com.kingbogo.superplayer.listener.MediaPlayerListener;
  * @author Kingbo
  * @date 2019/8/9
  */
-public interface IMediaPlayer {
+public interface IPlayer {
 
     void initPlayer();
 
@@ -45,6 +45,8 @@ public interface IMediaPlayer {
     long getCurrentDuration();
 
     long getBufferedDuration();
+
+    int getBufferedPercentage();
 
     void reset();
 

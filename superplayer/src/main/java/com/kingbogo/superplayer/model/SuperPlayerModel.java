@@ -25,7 +25,10 @@ public class SuperPlayerModel {
     /** id */
     public int id;
 
-    /** 占位图 */
+    /** title */
+    public String title;
+
+    /** 占位图 【视频专用】 */
     @DrawableRes
     public int holderImageResId;
 
@@ -35,7 +38,7 @@ public class SuperPlayerModel {
     /** 是否静音播放 */
     public boolean isMute = false;
 
-    /** 播放完成后：是否隐藏 */
+    /** 播放完成后：是否隐藏  【视频专用】 */
     public boolean isGoneAfterComplete = false;
 
     /** 锁屏是否 暂停 */
@@ -44,14 +47,13 @@ public class SuperPlayerModel {
     /** 开始播放的位置.单位：ms */
     public long startPlayPositionMs = 0;
 
-    /**
-     * 默认播放填充模式 （默认播放模式为: 自适应模式 ） <br/>
-     */
+    /** 默认播放填充模式 （默认播放模式为: 自适应模式 ）  【视频专用】 */
     public int renderMode = SuperConstants.REND_MODE_DEFAULT;
 
-    /**
-     * 是否需要进度回调
-     */
+    /** 播放器模式：正常模式  【视频专用】 */
+    public int playerMode = SuperConstants.PLAYER_MODE_NORMAL;
+
+    /** 是否需要进度回调 【视频专用】 */
     public boolean isNeedProgressCallback = false;
 
     /** 播放事件 */
@@ -70,6 +72,19 @@ public class SuperPlayerModel {
      */
     public SuperPlayerModel(String url) {
         this.url = url;
+    }
+
+    /**
+     * [构造]
+     *
+     * @param url   播放地址
+     * @param tag   TAG
+     * @param title 标题
+     */
+    public SuperPlayerModel(String url, String tag, String title) {
+        this.url = url;
+        this.tag = tag;
+        this.title = title;
     }
 
     public SuperPlayerListener getPlayerListener() {

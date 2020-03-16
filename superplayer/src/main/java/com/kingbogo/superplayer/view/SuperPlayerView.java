@@ -12,40 +12,41 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.kingbogo.superplayer.R;
-import com.kingbogo.superplayer.common.IMediaPlayer;
+import com.kingbogo.superplayer.common.IPlayerControl;
 import com.kingbogo.superplayer.common.IRenderView;
-import com.kingbogo.superplayer.listener.MediaPlayerListener;
+import com.kingbogo.superplayer.common.ISuperPlayerView;
+import com.kingbogo.superplayer.controller.BaseController;
 import com.kingbogo.superplayer.listener.SuperPlayerListener;
-import com.kingbogo.superplayer.model.SuperConstants;
 import com.kingbogo.superplayer.model.SuperPlayerModel;
 import com.kingbogo.superplayer.model.SuperPlayerState;
-import com.kingbogo.superplayer.player.SuperPlayer;
-import com.kingbogo.superplayer.util.CheckUtil;
-import com.kingbogo.superplayer.util.LogUtil;
+import com.kingbogo.superplayer.player.MediaPlayer;
+import com.kingbogo.superplayer.util.SuperLogUtil;
 
 /**
  * <p>
- * 超级播放器View
+ * 超级播放器View（视频）
  * </p>
  *
  * @author Kingbo
  * @date 2019/8/12
  */
-public class SuperPlayerView extends FrameLayout implements MediaPlayerListener {
+public class SuperPlayerView extends FrameLayout implements ISuperPlayerView, IPlayerControl {
 
     private static final String TAG = "SuperPlayerView";
 
+    private FrameLayout mRootView;
     private FrameLayout mPlayerContainerView;
     private ImageView mHolderIv;
 
-    private IMediaPlayer mMediaPlayer;
+    private MediaPlayer mMediaPlayer;
     private IRenderView mRenderView;
 
-    private SuperPlayerModel mCurrentPlayerModel;
-
-    private SuperPlayerState mCurrentPlayState = SuperPlayerState.IDLE;
-
     private ProgressRunnable mProgressRunnable;
+
+    // 控制器
+    private BaseController mPlayerController;
+    private boolean mIsLocked;
+    private boolean mIsFullScreen;
 
     public SuperPlayerView(@NonNull Context context) {
         this(context, null);
@@ -61,19 +62,21 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     }
 
     private void initView(Context context) {
-        FrameLayout rootView = (FrameLayout) LayoutInflater.from(context).inflate(R.layout.view_super_player, null);
-        mPlayerContainerView = rootView.findViewById(R.id.super_view_container);
-        mHolderIv = rootView.findViewById(R.id.super_view_holder_iv);
-
-        removeAllViews();
-        rootView.removeView(mPlayerContainerView);
-        rootView.removeView(mHolderIv);
-
-        addView(mPlayerContainerView);
-        addView(mHolderIv);
+        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mRootView = (FrameLayout) LayoutInflater.from(context).inflate(R.layout.view_super_player, this);
+        mPlayerContainerView = mRootView.findViewById(R.id.super_view_container);
+        mHolderIv = mRootView.findViewById(R.id.super_view_holder_iv);
     }
 
     // ------------------------------------------------------------- @ Public
+
+    /**
+     * 设置播放对象
+     */
+    public void setSuperPlayerModel(SuperPlayerModel playerModel) {
+        initPlayer();
+        mMediaPlayer.setCurrentPlayerModel(playerModel);
+    }
 
     /**
      * 播放（点播）
@@ -85,35 +88,48 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     /**
      * 播放（点播）
      */
+    public void playWithUrl(String url, SuperPlayerListener playerListener) {
+        SuperPlayerModel playerModel = new SuperPlayerModel(url);
+        playerModel.setPlayerListener(playerListener);
+        playWithModel(playerModel);
+    }
+
+    /**
+     * 播放（点播）
+     */
     public void playWithModel(SuperPlayerModel playerModel) {
-        LogUtil.v(TAG, "_playWithModel()......");
-        if (playerModel == null || CheckUtil.isEmpty(playerModel.url)) {
-            LogUtil.w("_playWithModel(), playerModel is null OR playerModel.url is null...");
-            setPlayState(SuperPlayerState.ERROR);
-            return;
-        }
-        mCurrentPlayerModel = playerModel;
+        SuperLogUtil.v(TAG, "_playWithModel()......");
         setVisibility(VISIBLE);
         // init
         stop(false);
-        initPlayer(getContext());
+        initPlayer();
         // config
-        setLoop(playerModel.isLoop);
-        setMute(playerModel.isMute);
         setRenderMode(playerModel.renderMode);
+        if (mPlayerController != null) {
+            playerModel.isNeedProgressCallback = true;
+            playerModel.isGoneAfterComplete = false;
+        }
         // play
-        mMediaPlayer.startPlay(playerModel.url);
-        setPlayState(SuperPlayerState.PREPARING);
-        // progress callback
-        postProgressRunnable();
+        boolean isSuccess = mMediaPlayer.playWithModel(playerModel);
+        if (isSuccess) {
+            // progress callback
+            postProgressRunnable();
+        }
+        // controller
+        if (mPlayerController != null) {
+            mPlayerController.onPlayerModeChanged(playerModel.playerMode);
+            mPlayerController.onPlayerSetTitle(playerModel.title);
+        }
     }
 
     /**
      * 重播
      */
     public void replay() {
-        LogUtil.v(TAG, "_replay()......");
-        playWithModel(mCurrentPlayerModel);
+        SuperLogUtil.v(TAG, "_replay()......");
+        if (mMediaPlayer != null) {
+            playWithModel(mMediaPlayer.getCurrentPlayerModel());
+        }
     }
 
     /**
@@ -121,7 +137,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
      */
     public void replay4Seek() {
         if (mMediaPlayer != null) {
-            mMediaPlayer.replay();
+            mMediaPlayer.replay4Seek();
         }
     }
 
@@ -129,7 +145,9 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
      * 设置进度。单位：s
      */
     public void seek(long seekTime) {
-        seek4Ms(seekTime * 1000L);
+        if (mMediaPlayer != null) {
+            mMediaPlayer.seek(seekTime);
+        }
     }
 
     /**
@@ -137,8 +155,7 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
      */
     public void seek4Ms(long seekTime) {
         if (mMediaPlayer != null) {
-            mMediaPlayer.seekTo(seekTime);
-            mMediaPlayer.resume();
+            mMediaPlayer.seek4Ms(seekTime);
         }
     }
 
@@ -148,7 +165,6 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     public void resume() {
         if (mMediaPlayer != null) {
             mMediaPlayer.resume();
-            setPlayState(SuperPlayerState.PLAYING);
         }
     }
 
@@ -158,7 +174,6 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     public void pause() {
         if (mMediaPlayer != null) {
             mMediaPlayer.pause();
-            setPlayState(SuperPlayerState.PAUSED);
         }
     }
 
@@ -169,7 +184,6 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
      */
     public void stopPlay(boolean isClearFrame) {
         stop(isClearFrame);
-        setPlayState(SuperPlayerState.STOPPED);
         if (isClearFrame) {
             setVisibility(GONE);
             releaseRenderView();
@@ -192,8 +206,37 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
      */
     public void setMute(boolean isMute) {
         if (mMediaPlayer != null) {
-            mMediaPlayer.setVolume(isMute ? 0.0f : 1.0f);
+            mMediaPlayer.setMute(isMute);
         }
+    }
+
+    /**
+     * 是否静音
+     */
+    public boolean isMute() {
+        if (mMediaPlayer != null) {
+            return mMediaPlayer.isMute();
+        }
+        return false;
+    }
+
+    /**
+     * 设置音量
+     */
+    public void setVolume(float volume) {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.setVolume(volume);
+        }
+    }
+
+    /**
+     * @return 获取音量
+     */
+    public float getVolume() {
+        if (mMediaPlayer != null) {
+            return mMediaPlayer.getVolume();
+        }
+        return 0.0f;
     }
 
     /**
@@ -208,11 +251,20 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     }
 
     /**
+     * 设置播放速度
+     */
+    public void setSpeed(float speed) {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.setSpeed(speed);
+        }
+    }
+
+    /**
      * 生命周期：继续
      */
     public void onResume() {
-        if (mCurrentPlayerModel != null && mCurrentPlayerModel.isPauseAfterLockScreen) {
-            resume();
+        if (mMediaPlayer != null) {
+            mMediaPlayer.onResume();
         }
     }
 
@@ -220,8 +272,8 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
      * 生命周期：暂停
      */
     public void onPause() {
-        if (mCurrentPlayerModel != null && mCurrentPlayerModel.isPauseAfterLockScreen) {
-            pause();
+        if (mMediaPlayer != null) {
+            mMediaPlayer.onPause();
         }
     }
 
@@ -229,11 +281,13 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
      * 释放资源
      */
     public void release() {
-        if (mCurrentPlayerModel != null) {
-            mCurrentPlayerModel.setPlayerListener(null);
+        if (mMediaPlayer != null) {
+            mMediaPlayer.release();
         }
-        stop(true);
-        releaseMediaPlayer();
+        if (mPlayerController != null) {
+
+        }
+        removeProgressRunnable();
         releaseRenderView();
     }
 
@@ -242,15 +296,11 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
      */
     public boolean isPlaying() {
         if (mMediaPlayer != null) {
-            if (mMediaPlayer.isPlaying()) {
-                return true;
-            } else if (mCurrentPlayState != null) {
-                return mCurrentPlayState == SuperPlayerState.PREPARING || mCurrentPlayState == SuperPlayerState.PREPARED
-                        || mCurrentPlayState == SuperPlayerState.PLAYING || mCurrentPlayState == SuperPlayerState.BUFFERING
-                        || mCurrentPlayState == SuperPlayerState.BUFFERED;
-            }
+            SuperLogUtil.d(TAG, "_isPlaying()... playState: " + mMediaPlayer.getPlayState());
+            return mMediaPlayer.isPlaying();
+        } else {
+            return false;
         }
-        return false;
     }
 
     /**
@@ -284,28 +334,48 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     }
 
     /**
+     * 缓冲进度百分比
+     */
+    public int getBufferedPercentage() {
+        if (mMediaPlayer != null) {
+            return mMediaPlayer.getBufferedPercentage();
+        }
+        return 0;
+    }
+
+    /**
      * @return 获取当前播放状态
      */
     public SuperPlayerState getPlayState() {
-        return mCurrentPlayState;
+        if (mMediaPlayer != null) {
+            return mMediaPlayer.getPlayState();
+        } else {
+            return SuperPlayerState.IDLE;
+        }
     }
 
     /** 显示占位图 */
     public void showHolderImage() {
-        if (mCurrentPlayerModel != null && mCurrentPlayerModel.holderImageResId != 0) {
-            mHolderIv.setImageResource(mCurrentPlayerModel.holderImageResId);
-            mHolderIv.setVisibility(VISIBLE);
+        if (mMediaPlayer != null) {
+            SuperPlayerModel playerModel = mMediaPlayer.getCurrentPlayerModel();
+            if (playerModel != null && playerModel.holderImageResId != 0) {
+                mHolderIv.setImageResource(playerModel.holderImageResId);
+                mHolderIv.setVisibility(VISIBLE);
+            }
         }
     }
 
     /** 显示占位图 */
     public void showHolderImage(@DrawableRes int imageResId) {
         if (imageResId != 0) {
-            if (mCurrentPlayerModel != null) {
-                mCurrentPlayerModel.holderImageResId = imageResId;
+            if (mMediaPlayer != null) {
+                SuperPlayerModel playerModel = mMediaPlayer.getCurrentPlayerModel();
+                if (playerModel != null) {
+                    playerModel.holderImageResId = imageResId;
+                }
+                mHolderIv.setImageResource(imageResId);
+                mHolderIv.setVisibility(VISIBLE);
             }
-            mHolderIv.setImageResource(imageResId);
-            mHolderIv.setVisibility(VISIBLE);
         }
     }
 
@@ -344,6 +414,19 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
         return 0;
     }
 
+    /**
+     * 设置控制器
+     */
+    public void setPlayerController(BaseController baseController) {
+        mRootView.removeView(mPlayerController);
+        mPlayerController = baseController;
+        if (mPlayerController != null) {
+            mPlayerController.setPlayerControl(this);
+            LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            mRootView.addView(mPlayerController, layoutParams);
+        }
+    }
+
     // ------------------------------------------------------------- @ protected
 
     @Override
@@ -352,7 +435,9 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
         try {
             release();
         } catch (Exception e) {
+            SuperLogUtil.e(e);
         } catch (Error e) {
+            SuperLogUtil.e(e.getCause());
         }
     }
 
@@ -361,59 +446,27 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     /**
      * 初始化播放器
      */
-    private void initPlayer(Context context) {
+    private void initPlayer() {
         if (mMediaPlayer == null) {
-            mMediaPlayer = new SuperPlayer(context);
-            mMediaPlayer.initPlayer();
+            mMediaPlayer = new MediaPlayer();
+            mMediaPlayer.initPlayer(getContext());
+            mMediaPlayer.setSuperPlayerView(this);
+        } else {
+            mMediaPlayer.openMediaPlayerListener();
         }
+
         if (mRenderView == null) {
-            mRenderView = new TextureRenderView(context, mMediaPlayer);
+            mRenderView = new TextureRenderView(getContext(), mMediaPlayer.getPlayer());
             LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
             mPlayerContainerView.addView(mRenderView.getRendView(), 0, layoutParams);
         }
-
-        mMediaPlayer.setMediaPlayerListener(this);
-    }
-
-    private SuperPlayerListener getSuperPlayerListener() {
-        if (mCurrentPlayerModel != null && mCurrentPlayerModel.getPlayerListener() != null) {
-            return mCurrentPlayerModel.getPlayerListener();
-        }
-        return null;
     }
 
     private void stop(boolean clearFrame) {
         if (mMediaPlayer != null) {
-            mMediaPlayer.setMediaPlayerListener(null);
             mMediaPlayer.stop(clearFrame);
-            removeProgressRunnable();
         }
-    }
-
-    private void setPlayState(SuperPlayerState playState) {
-        if (mCurrentPlayState != playState) {
-            mCurrentPlayState = playState;
-            SuperPlayerListener playerListener = getSuperPlayerListener();
-            if (playerListener != null) {
-                playerListener.onSuperPlayerStateChanged(mCurrentPlayerModel, playState);
-            }
-        }
-    }
-
-    private void setPlayProgressCallback() {
-        if (mCurrentPlayerModel != null && mMediaPlayer != null) {
-            SuperPlayerListener playerListener = getSuperPlayerListener();
-            if (playerListener != null) {
-                playerListener.onSuperPlayerProgress(mCurrentPlayerModel, mMediaPlayer.getCurrentDuration(), mMediaPlayer.getTotalDuration());
-            }
-        }
-    }
-
-    private void releaseMediaPlayer() {
-        if (mMediaPlayer != null) {
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
+        removeProgressRunnable();
     }
 
     private void releaseRenderView() {
@@ -424,68 +477,159 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
         }
     }
 
-    private void postProgressRunnable() {
-        if (mCurrentPlayerModel != null && mCurrentPlayerModel.isNeedProgressCallback) {
-            if (mProgressRunnable == null) {
-                mProgressRunnable = new ProgressRunnable();
+    private void setPlayProgressCallback() {
+        if (mMediaPlayer != null) {
+            SuperPlayerModel playerModel = mMediaPlayer.getCurrentPlayerModel();
+            if (playerModel != null) {
+                SuperPlayerListener playerListener = mMediaPlayer.getSuperPlayerListener();
+                if (playerListener != null) {
+                    playerListener.onSuperPlayerProgress(playerModel, mMediaPlayer.getCurrentDuration(), mMediaPlayer.getTotalDuration());
+                }
+                if (mPlayerController != null) {
+                    mPlayerController.onPlayerProgressChanged();
+                }
             }
-            removeProgressRunnable();
-            post(mProgressRunnable);
+        }
+    }
+
+    private void postProgressRunnable() {
+        SuperLogUtil.v(TAG, "_postProgressRunnable()...");
+        if (mMediaPlayer != null) {
+            SuperPlayerModel playerModel = mMediaPlayer.getCurrentPlayerModel();
+            if (playerModel != null && playerModel.isNeedProgressCallback) {
+                if (mProgressRunnable == null) {
+                    mProgressRunnable = new SuperPlayerView.ProgressRunnable();
+                }
+                removeProgressRunnable();
+                post(mProgressRunnable);
+            }
         }
     }
 
     private void removeProgressRunnable() {
+        SuperLogUtil.v(TAG, "_removeProgressRunnable()...");
         if (mProgressRunnable != null) {
             removeCallbacks(mProgressRunnable);
         }
     }
 
-    // ------------------------------------------------------------- @ MediaPlayerListener
+    // ------------------------------------------------------------- @ ISuperPlayerView
 
     @Override
-    public void onInfo(int what, int extra) {
-        if (what == SuperConstants.MEDIA_INFO_BUFFERING_START) {
-            setPlayState(SuperPlayerState.BUFFERING);
-        } else if (what == SuperConstants.MEDIA_INFO_BUFFERING_END) {
-            setPlayState(SuperPlayerState.BUFFERED);
-        } else if (what == SuperConstants.MEDIA_INFO_VIDEO_RENDER_START) {
-            setPlayState(SuperPlayerState.PLAYING);
-        } else if (what == SuperConstants.MEDIA_INFO_VIDEO_ROTATION_CHANGED) {
-            if (mRenderView != null) {
-                mRenderView.setVideoRotation(extra);
+    public void onPlayerStateChanged(SuperPlayerState playerState) {
+        if (playerState == SuperPlayerState.COMPLETED) {
+            if (mMediaPlayer != null) {
+                SuperPlayerModel playerModel = mMediaPlayer.getCurrentPlayerModel();
+                if (playerModel != null && playerModel.isGoneAfterComplete) {
+                    setVisibility(GONE);
+                }
             }
+            removeProgressRunnable();
+            // 完成时再回调一次进度
+            setPlayProgressCallback();
+
+        } else if (playerState == SuperPlayerState.ERROR) {
+            removeProgressRunnable();
+        }
+        if (mPlayerController != null) {
+            mPlayerController.onPlayerStateChanged(playerState);
         }
     }
 
     @Override
-    public void onPrepared() {
-        setPlayState(SuperPlayerState.PREPARED);
-        if (mCurrentPlayerModel != null && mCurrentPlayerModel.startPlayPositionMs > 0) {
-            seek4Ms(mCurrentPlayerModel.startPlayPositionMs);
+    public IRenderView getRenderView() {
+        return mRenderView;
+    }
+
+    // ------------------------------------------------------------- @ IPlayerControl
+
+    @Override
+    public void onCtrlResume() {
+        SuperLogUtil.d(TAG, "_onCtrlResume()...");
+        resume();
+    }
+
+    @Override
+    public void onCtrlPause() {
+        SuperLogUtil.d(TAG, "_onCtrlPause()...");
+        pause();
+    }
+
+    @Override
+    public void onCtrlReplay() {
+        SuperLogUtil.d(TAG, "_onCtrlReplay()...");
+        replay();
+    }
+
+    @Override
+    public long onCtrlGetCurrentDuration() {
+        return getCurrentDuration();
+    }
+
+    @Override
+    public long onCtrlGetTotalDuration() {
+        return getTotalDuration();
+    }
+
+    @Override
+    public int onCtrlGetBufferedPercentage() {
+        return getBufferedPercentage();
+    }
+
+    @Override
+    public void onCtrlSeekTo(long timeMs) {
+        SuperLogUtil.d(TAG, "_onCtrlSeekTo()...");
+        seek4Ms(timeMs);
+    }
+
+    @Override
+    public boolean onCtrlIsPlaying() {
+        SuperLogUtil.d(TAG, "_onCtrlIsPlaying()...");
+        return isPlaying();
+    }
+
+    @Override
+    public void onCtrlSetMute(boolean isMute) {
+        SuperLogUtil.d(TAG, "_onCtrlSetMute()...");
+        setMute(isMute);
+    }
+
+    @Override
+    public boolean onCtrlIsMute() {
+        return isMute();
+    }
+
+    @Override
+    public void onCtrlSetRenderMode(int renderMode) {
+        setRenderMode(renderMode);
+    }
+
+    @Override
+    public void onCtrlSetSpeed(float speed) {
+        SuperLogUtil.d(TAG, "_onCtrlSetSpeed()...");
+        setSpeed(speed);
+    }
+
+    @Override
+    public void onCtrlSetLock(boolean isLock) {
+        mIsLocked = isLock;
+    }
+
+    @Override
+    public void onCtrlFullScreen(boolean isFull) {
+        mIsFullScreen = isFull;
+        if (isFull) {
+            // TODO 全屏
+
+        } else {
+            // TODO 退出全屏
+
         }
     }
 
     @Override
-    public void onCompletion() {
-        setPlayState(SuperPlayerState.COMPLETED);
-        if (mCurrentPlayerModel != null && mCurrentPlayerModel.isGoneAfterComplete) {
-            setVisibility(GONE);
-        }
-        removeProgressRunnable();
-    }
-
-    @Override
-    public void onError() {
-        setPlayState(SuperPlayerState.ERROR);
-        removeProgressRunnable();
-    }
-
-    @Override
-    public void onVideoSizeChanged(int width, int height) {
-        if (mRenderView != null) {
-            mRenderView.setRenderMode(mCurrentPlayerModel.renderMode);
-            mRenderView.setVideoSize(width, height);
-        }
+    public boolean onCtrlIsFullScreen() {
+        return mIsFullScreen;
     }
 
     // ------------------------------------------------------------- @.@
@@ -496,20 +640,24 @@ public class SuperPlayerView extends FrameLayout implements MediaPlayerListener 
     private class ProgressRunnable implements Runnable {
         @Override
         public void run() {
-            if (mCurrentPlayerModel != null && mMediaPlayer != null) {
-                if (mCurrentPlayState == SuperPlayerState.PREPARING || mCurrentPlayState == SuperPlayerState.PREPARED
-                        || mCurrentPlayState == SuperPlayerState.PLAYING || mCurrentPlayState == SuperPlayerState.PAUSED
-                        || mCurrentPlayState == SuperPlayerState.BUFFERING || mCurrentPlayState == SuperPlayerState.BUFFERED) {
-                    long currentDuration = mMediaPlayer.getCurrentDuration();
-                    long totalDuration = mMediaPlayer.getTotalDuration();
-                    if (totalDuration > 0) {
-                        setPlayProgressCallback();
+            if (mMediaPlayer != null) {
+                SuperPlayerModel playerModel = mMediaPlayer.getCurrentPlayerModel();
+                SuperPlayerState playerState = mMediaPlayer.getPlayState();
+                if (playerModel != null) {
+                    if (playerState == SuperPlayerState.PREPARING || playerState == SuperPlayerState.PREPARED
+                            || playerState == SuperPlayerState.PLAYING || playerState == SuperPlayerState.PAUSED
+                            || playerState == SuperPlayerState.BUFFERING || playerState == SuperPlayerState.BUFFERED) {
+                        long currentDuration = mMediaPlayer.getCurrentDuration();
+                        long totalDuration = mMediaPlayer.getTotalDuration();
+                        if (totalDuration > 0) {
+                            setPlayProgressCallback();
+                        }
+                        long delayMillis = 1000;
+                        if (playerState != SuperPlayerState.PAUSED) {
+                            delayMillis = 1000 - (currentDuration % 1000);
+                        }
+                        postDelayed(mProgressRunnable, delayMillis);
                     }
-                    long delayMillis = 1000;
-                    if (mCurrentPlayState != SuperPlayerState.PAUSED) {
-                        delayMillis = 1000 - (currentDuration % 1000);
-                    }
-                    postDelayed(mProgressRunnable, delayMillis);
                 }
             }
         }

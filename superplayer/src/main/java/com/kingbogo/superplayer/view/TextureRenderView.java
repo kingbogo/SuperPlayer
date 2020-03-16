@@ -8,9 +8,9 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 
-import com.kingbogo.superplayer.common.IMediaPlayer;
+import com.kingbogo.superplayer.common.IPlayer;
 import com.kingbogo.superplayer.common.IRenderView;
-import com.kingbogo.superplayer.util.LogUtil;
+import com.kingbogo.superplayer.util.SuperLogUtil;
 import com.kingbogo.superplayer.util.MeasureHelper;
 
 /**
@@ -26,10 +26,10 @@ class TextureRenderView extends TextureView implements IRenderView, TextureView.
 
     private SurfaceTexture mSurfaceTexture;
     private MeasureHelper mMeasureHelper;
-    private IMediaPlayer mMediaPlayer;
+    private IPlayer mMediaPlayer;
     private Surface mSurface;
 
-    public TextureRenderView(Context context, IMediaPlayer mediaPlayer) {
+    public TextureRenderView(Context context, IPlayer mediaPlayer) {
         super(context);
         mMediaPlayer = mediaPlayer;
         init();
@@ -82,10 +82,12 @@ class TextureRenderView extends TextureView implements IRenderView, TextureView.
     public void release() {
         if (mSurface != null) {
             mSurface.release();
+            mSurface = null;
         }
 
         if (mSurfaceTexture != null) {
             mSurfaceTexture.release();
+            mSurfaceTexture = null;
         }
     }
 
@@ -93,7 +95,7 @@ class TextureRenderView extends TextureView implements IRenderView, TextureView.
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
-        LogUtil.d("_onSurfaceTextureAvailable(), mSurfaceTexture: " + mSurfaceTexture + ", width: " + width + ", height: " + height);
+        SuperLogUtil.d("_onSurfaceTextureAvailable(), mSurfaceTexture: " + mSurfaceTexture + ", width: " + width + ", height: " + height);
         if (mSurfaceTexture != null) {
             setSurfaceTexture(mSurfaceTexture);
         } else {
@@ -105,12 +107,12 @@ class TextureRenderView extends TextureView implements IRenderView, TextureView.
 
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-        LogUtil.d("_onSurfaceTextureSizeChanged(), surface: " + surface + ", width: " + width + ", height: " + height);
+        SuperLogUtil.d("_onSurfaceTextureSizeChanged(), surface: " + surface + ", width: " + width + ", height: " + height);
     }
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        LogUtil.d("_onSurfaceTextureDestroyed, surface: " + surface);
+        SuperLogUtil.d("_onSurfaceTextureDestroyed, surface: " + surface);
         return false;
     }
 

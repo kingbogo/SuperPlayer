@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ImageView
+        android:id="@+id/super_icon_iv"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:background="@drawable/super_bg_shape_play"
+        android:padding="10dp"
+        android:src="@drawable/super_ic_action_replay"
+        tools:ignore="ContentDescription" />
+
+</merge>
