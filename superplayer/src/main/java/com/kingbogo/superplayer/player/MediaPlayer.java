@@ -2,6 +2,7 @@ package com.kingbogo.superplayer.player;
 
 import android.content.Context;
 
+import com.kingbogo.superplayer.common.IMediaQueue;
 import com.kingbogo.superplayer.common.IPlayer;
 import com.kingbogo.superplayer.common.IRenderView;
 import com.kingbogo.superplayer.common.ISuperPlayerView;
@@ -22,28 +23,30 @@ import com.kingbogo.superplayer.util.SuperLogUtil;
  * @date 2019/8/29
  */
 public class MediaPlayer implements MediaPlayerListener {
-
+    
     private static final String TAG = "MediaPlayer";
-
+    
     private IPlayer mPlayer;
     private ISuperPlayerView mSuperPlayerView;
-
+    
     protected SuperPlayerModel mCurrentPlayerModel;
-
+    
     private SuperPlayerState mCurrentPlayState = SuperPlayerState.IDLE;
-
+    
+    private IMediaQueue mMediaQueue;
+    
     /**
      * [构造]
      */
     public MediaPlayer() {
     }
-
+    
     // ------------------------------------------------------------- public
-
+    
     public IPlayer getPlayer() {
         return mPlayer;
     }
-
+    
     public void initPlayer(Context context) {
         if (mPlayer == null) {
             mPlayer = new ExoPlayer(context);
@@ -51,34 +54,38 @@ public class MediaPlayer implements MediaPlayerListener {
         }
         openMediaPlayerListener();
     }
-
+    
     public void openMediaPlayerListener() {
         if (mPlayer != null) {
             mPlayer.setMediaPlayerListener(this);
         }
     }
-
+    
     public SuperPlayerModel getCurrentPlayerModel() {
         return mCurrentPlayerModel;
     }
-
+    
     public void setCurrentPlayerModel(SuperPlayerModel playerModel) {
         mCurrentPlayerModel = playerModel;
     }
-
+    
     public SuperPlayerListener getSuperPlayerListener() {
         if (mCurrentPlayerModel != null && mCurrentPlayerModel.getPlayerListener() != null) {
             return mCurrentPlayerModel.getPlayerListener();
         }
         return null;
     }
-
+    
     public void setSuperPlayerView(ISuperPlayerView superPlayerView) {
         mSuperPlayerView = superPlayerView;
     }
-
+    
+    public void setMediaQueue(IMediaQueue mediaQueue) {
+        mMediaQueue = mediaQueue;
+    }
+    
     // ------------------------------------------------------------- function
-
+    
     /**
      * 播放
      */
@@ -102,7 +109,7 @@ public class MediaPlayer implements MediaPlayerListener {
         setPlayState(SuperPlayerState.PREPARING);
         return true;
     }
-
+    
     /**
      * 重播：seek方式
      */
@@ -111,14 +118,14 @@ public class MediaPlayer implements MediaPlayerListener {
             mPlayer.replay();
         }
     }
-
+    
     /**
      * 设置进度。单位：s
      */
     public void seek(long seekTime) {
         seek4Ms(seekTime * 1000L);
     }
-
+    
     /**
      * 设置进度。单位：ms
      */
@@ -128,7 +135,7 @@ public class MediaPlayer implements MediaPlayerListener {
             mPlayer.resume();
         }
     }
-
+    
     /**
      * 继续播放
      */
@@ -141,7 +148,7 @@ public class MediaPlayer implements MediaPlayerListener {
             }
         }
     }
-
+    
     /**
      * 暂停
      */
@@ -152,8 +159,8 @@ public class MediaPlayer implements MediaPlayerListener {
             setPlayState(SuperPlayerState.PAUSED);
         }
     }
-
-
+    
+    
     /**
      * 停止
      */
@@ -164,8 +171,8 @@ public class MediaPlayer implements MediaPlayerListener {
             setPlayState(SuperPlayerState.STOPPED);
         }
     }
-
-
+    
+    
     /**
      * 是否循环播放
      */
@@ -174,7 +181,7 @@ public class MediaPlayer implements MediaPlayerListener {
             mPlayer.setLoop(isLoop);
         }
     }
-
+    
     /**
      * 设置是否静音
      *
@@ -185,7 +192,7 @@ public class MediaPlayer implements MediaPlayerListener {
             mPlayer.setVolume(isMute ? 0.0f : 1.0f);
         }
     }
-
+    
     /**
      * 是否静音
      */
@@ -195,7 +202,7 @@ public class MediaPlayer implements MediaPlayerListener {
         }
         return false;
     }
-
+    
     /**
      * 设置音量
      */
@@ -204,7 +211,7 @@ public class MediaPlayer implements MediaPlayerListener {
             mPlayer.setVolume(volume);
         }
     }
-
+    
     /**
      * @return 获取音量
      */
@@ -215,7 +222,7 @@ public class MediaPlayer implements MediaPlayerListener {
             return 0.0f;
         }
     }
-
+    
     /**
      * 设置播放速度
      */
@@ -224,7 +231,7 @@ public class MediaPlayer implements MediaPlayerListener {
             mPlayer.setSpeed(speed);
         }
     }
-
+    
     /**
      * 生命周期：继续
      */
@@ -233,7 +240,7 @@ public class MediaPlayer implements MediaPlayerListener {
             resume();
         }
     }
-
+    
     /**
      * 生命周期：暂停
      */
@@ -242,7 +249,7 @@ public class MediaPlayer implements MediaPlayerListener {
             pause();
         }
     }
-
+    
     /**
      * 释放资源
      */
@@ -257,7 +264,7 @@ public class MediaPlayer implements MediaPlayerListener {
         stop(true);
         releaseMediaPlayer();
     }
-
+    
     /**
      * 是否正在播放
      */
@@ -273,7 +280,7 @@ public class MediaPlayer implements MediaPlayerListener {
             return false;
         }
     }
-
+    
     /**
      * 视频总长。单位：ms
      */
@@ -283,7 +290,7 @@ public class MediaPlayer implements MediaPlayerListener {
         }
         return 0L;
     }
-
+    
     /**
      * 当前播放进度。单位：ms
      */
@@ -293,7 +300,7 @@ public class MediaPlayer implements MediaPlayerListener {
         }
         return 0L;
     }
-
+    
     /**
      * 缓冲进度。单位：ms
      */
@@ -303,7 +310,7 @@ public class MediaPlayer implements MediaPlayerListener {
         }
         return 0L;
     }
-
+    
     /**
      * 缓冲进度百分比
      */
@@ -313,14 +320,14 @@ public class MediaPlayer implements MediaPlayerListener {
         }
         return 0;
     }
-
+    
     /**
      * @return 获取当前播放状态
      */
     public SuperPlayerState getPlayState() {
         return mCurrentPlayState;
     }
-
+    
     /**
      * 音频会话ID
      */
@@ -330,7 +337,7 @@ public class MediaPlayer implements MediaPlayerListener {
         }
         return 0;
     }
-
+    
     /**
      * 宽
      */
@@ -340,7 +347,7 @@ public class MediaPlayer implements MediaPlayerListener {
         }
         return 0;
     }
-
+    
     /**
      * 高
      */
@@ -350,16 +357,16 @@ public class MediaPlayer implements MediaPlayerListener {
         }
         return 0;
     }
-
+    
     // ------------------------------------------------------------- private
-
+    
     private void releaseMediaPlayer() {
         if (mPlayer != null) {
             mPlayer.release();
             mPlayer = null;
         }
     }
-
+    
     private void setPlayState(SuperPlayerState playState) {
         if (mCurrentPlayState != playState) {
             mCurrentPlayState = playState;
@@ -370,11 +377,14 @@ public class MediaPlayer implements MediaPlayerListener {
             if (mSuperPlayerView != null) {
                 mSuperPlayerView.onPlayerStateChanged(playState);
             }
+            if (mMediaQueue != null) {
+                mMediaQueue.onPlayerStateChanged(playState);
+            }
         }
     }
-
+    
     // ------------------------------------------------------------- @ MediaPlayerListener
-
+    
     @Override
     public void onInfo(int what, int extra) {
         SuperLogUtil.v(TAG, "_onInfo(), what: " + what + ", extra: " + extra);
@@ -390,7 +400,7 @@ public class MediaPlayer implements MediaPlayerListener {
             }
         }
     }
-
+    
     @Override
     public void onPrepared() {
         setPlayState(SuperPlayerState.PREPARED);
@@ -398,17 +408,17 @@ public class MediaPlayer implements MediaPlayerListener {
             seek4Ms(mCurrentPlayerModel.startPlayPositionMs);
         }
     }
-
+    
     @Override
     public void onCompletion() {
         setPlayState(SuperPlayerState.COMPLETED);
     }
-
+    
     @Override
     public void onError(int errorCode) {
         setPlayState(SuperPlayerState.ERROR);
     }
-
+    
     @Override
     public void onVideoSizeChanged(int width, int height) {
         if (mSuperPlayerView != null && mSuperPlayerView.getRenderView() != null) {
@@ -417,5 +427,5 @@ public class MediaPlayer implements MediaPlayerListener {
             renderView.setVideoSize(width, height);
         }
     }
-
+    
 }

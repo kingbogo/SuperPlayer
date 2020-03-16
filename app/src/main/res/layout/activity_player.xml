@@ -90,6 +90,12 @@
                 android:layout_height="40dp"
                 android:text="渲染:CENTER" />
 
+            <Button
+                android:id="@+id/player_play_list_btn"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="播放列表" />
+
         </LinearLayout>
     </ScrollView>
 
