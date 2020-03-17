@@ -91,14 +91,16 @@ public abstract class GestureController extends BaseController {
         @Override
         public boolean onDown(MotionEvent e) {
             SuperLogUtil.v(TAG, "==> onDown()...");
-            boolean isFix = mCurrentPlayerState == SuperPlayerState.STOPPED || mCurrentPlayerState == SuperPlayerState.PAUSED
-                    || mCurrentPlayerState == SuperPlayerState.COMPLETED;
-            if (mIsShowing) {
-                //if (!isFix) {
-                hideController();
-                //}
-            } else {
-                showController(false, !isFix);
+            if (mCurrentPlayerState != SuperPlayerState.ERROR) {
+                boolean isFix = mCurrentPlayerState == SuperPlayerState.STOPPED || mCurrentPlayerState == SuperPlayerState.PAUSED
+                        || mCurrentPlayerState == SuperPlayerState.COMPLETED;
+                if (mIsShowing) {
+                    //if (!isFix) {
+                    hideController();
+                    //}
+                } else {
+                    showController(false, !isFix);
+                }
             }
             return super.onDown(e);
         }

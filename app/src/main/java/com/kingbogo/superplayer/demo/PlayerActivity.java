@@ -126,8 +126,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 modelList.add(new SuperPlayerModel(Constants.VIDEO_URL_1, TAG, "列表1"));
                 modelList.add(new SuperPlayerModel(Constants.VIDEO_URL_2, TAG, "列表2"));
                 modelList.add(new SuperPlayerModel(Constants.VIDEO_URL_3, TAG, "列表3"));
-                modelList.add(new SuperPlayerModel(Constants.VIDEO_URL_4, TAG, "列表4"));
-                superPlayerView.playWithModelList(modelList, 0, SuperConstants.MEDIA_QUEUE_MODE_SINGLE_LOOP, this);
+                superPlayerView.playWithModelList(modelList, 0, SuperConstants.MEDIA_QUEUE_MODE_LIST_ONCE, this);
                 break;
             
             default:

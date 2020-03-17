@@ -14,6 +14,7 @@ import com.kingbogo.superplayer.common.IPlayerControl;
 import com.kingbogo.superplayer.model.SuperConstants;
 import com.kingbogo.superplayer.model.SuperPlayerState;
 import com.kingbogo.superplayer.util.CheckUtil;
+import com.kingbogo.superplayer.util.SuperAnimHelper;
 import com.kingbogo.superplayer.view.SuperIconView;
 import com.kingbogo.superplayer.view.SuperTipsView;
 
@@ -125,6 +126,7 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
         mCurrentPlayerState = playerState;
         onBasePlayerStateChanged(playerState);
         if (playerState == SuperPlayerState.ERROR) {
+            hideController();
             showTipsView(getResources().getString(R.string.super_tips_play_error), getResources().getString(R.string.super_tips_replay));
         } else {
             if (playerState == SuperPlayerState.COMPLETED) {
@@ -251,6 +253,108 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
             return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
         } else {
             return mFormatter.format("%02d:%02d", minutes, seconds).toString();
+        }
+    }
+    
+    // ------------------------------------------------------------------------ @ anim
+    
+    /**
+     * 动画显示/隐藏上边的 View
+     *
+     * @param topView 上边的 View
+     * @param isShow  显示/隐藏
+     */
+    protected void showHideTopWithAnim(final View topView, boolean isShow) {
+        if (isShow) {
+            topView.setVisibility(VISIBLE);
+            SuperAnimHelper.showTop(topView, null);
+        } else {
+            SuperAnimHelper.hideTop(topView, new SuperAnimHelper.SuperAnimActionListener() {
+                @Override
+                public void onSuperAnimEnd() {
+                    topView.setVisibility(GONE);
+                }
+            });
+        }
+    }
+    
+    /**
+     * 动画显示/隐藏下边的 View
+     *
+     * @param bottomView 下边的 View
+     * @param isShow     显示/隐藏
+     */
+    protected void showHideBottomWithAnim(final View bottomView, boolean isShow) {
+        if (isShow) {
+            bottomView.setVisibility(VISIBLE);
+            SuperAnimHelper.showBottom(bottomView, null);
+        } else {
+            SuperAnimHelper.hideBottom(bottomView, new SuperAnimHelper.SuperAnimActionListener() {
+                @Override
+                public void onSuperAnimEnd() {
+                    bottomView.setVisibility(GONE);
+                }
+            });
+        }
+    }
+    
+    /**
+     * 动画显示/隐藏左边的 View
+     *
+     * @param leftView 左边的 View
+     * @param isShow   显示/隐藏
+     */
+    protected void showHideLeftWithAnim(final View leftView, boolean isShow) {
+        if (isShow) {
+            leftView.setVisibility(VISIBLE);
+            SuperAnimHelper.showLeft(leftView, null);
+        } else {
+            SuperAnimHelper.hideLeft(leftView, new SuperAnimHelper.SuperAnimActionListener() {
+                @Override
+                public void onSuperAnimEnd() {
+                    leftView.setVisibility(GONE);
+                }
+            });
+        }
+    }
+    
+    /**
+     * 动画显示/隐藏右边的 View
+     *
+     * @param rightView 右边的 View
+     * @param isShow    显示/隐藏
+     */
+    protected void showHideRightWithAnim(final View rightView, boolean isShow) {
+        if (isShow) {
+            rightView.setVisibility(VISIBLE);
+            SuperAnimHelper.showRight(rightView, null);
+        } else {
+            SuperAnimHelper.hideRight(rightView, new SuperAnimHelper.SuperAnimActionListener() {
+                @Override
+                public void onSuperAnimEnd() {
+                    rightView.setVisibility(GONE);
+                }
+            });
+        }
+    }
+    
+    /**
+     * 动画显示/隐藏上边的 View
+     *
+     * @param centerView 中间的 View
+     * @param isShow     显示/隐藏
+     */
+    protected void showHideCenterWithAnim(final View centerView, boolean isShow) {
+        if (isShow) {
+            centerView.setVisibility(VISIBLE);
+            SuperAnimHelper.showCenter(centerView, null);
+        } else {
+            SuperAnimHelper.hideCenter(centerView, new SuperAnimHelper.SuperAnimActionListener() {
+                @Override
+                public void onSuperAnimEnd() {
+                    centerView.setVisibility(GONE);
+                }
+            });
         }
     }
     

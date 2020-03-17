@@ -6,7 +6,7 @@
         android:id="@+id/super_tips_ll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/super_black"
+        android:background="@color/super_transparent"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -24,15 +24,15 @@
             android:id="@+id/super_tips_button_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/super_bg_shape_btn"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/super_bg_shape_stroke_white"
             android:gravity="center"
-            android:paddingStart="15dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="15dp"
-            android:paddingBottom="5dp"
+            android:paddingStart="12dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="4dp"
             android:textColor="@android:color/white"
-            android:textSize="16sp"
+            android:textSize="15sp"
             tools:text="Tips" />
 
     </LinearLayout>
