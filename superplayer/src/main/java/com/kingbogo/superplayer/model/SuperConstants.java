@@ -27,8 +27,10 @@ public final class SuperConstants {
     
     // ------------------------------------------------------- @ PlayerMode
     
-    public static final int PLAYER_MODE_NORMAL = 1;
-    public static final int PLAYER_MODE_FULLSCREEN = 2;
+    /** 显示模式：正常 */
+    public static final int DISPLAY_MODE_NORMAL = 1;
+    /** 显示模式：全屏 */
+    public static final int DISPLAY_MODE_FULLSCREEN = 2;
     
     // ------------------------------------------------------- @ MediaInfo
     

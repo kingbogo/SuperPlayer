@@ -50,8 +50,8 @@ public class SuperPlayerModel {
     /** 默认播放填充模式 （默认播放模式为: 自适应模式 ）  【视频专用】 */
     public int renderMode = SuperConstants.REND_MODE_DEFAULT;
 
-    /** 播放器模式：正常模式  【视频专用】 */
-    public int playerMode = SuperConstants.PLAYER_MODE_NORMAL;
+    /** 播放器显示模式：正常模式  【视频专用】 */
+    public int displayMode = SuperConstants.DISPLAY_MODE_NORMAL;
 
     /** 是否需要进度回调 【视频专用】 */
     public boolean isNeedProgressCallback = false;

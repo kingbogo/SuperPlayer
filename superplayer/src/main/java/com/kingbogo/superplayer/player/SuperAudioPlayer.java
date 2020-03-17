@@ -83,7 +83,7 @@ public class SuperAudioPlayer extends MediaPlayer implements IMediaQueue.MediaQu
      * @param modelList 列表
      */
     public void playWithModelList(List<SuperPlayerModel> modelList) {
-        playWithModelList(modelList, 0, SuperConstants.MEDIA_QUEUE_MODE_LIST_ONCE, null);
+        playWithModelList(modelList, null);
     }
     
     /**
@@ -105,7 +105,8 @@ public class SuperAudioPlayer extends MediaPlayer implements IMediaQueue.MediaQu
      * @param queueLoopMode      播放的循环模式 @
      * @param mediaQueueListener 对列事件
      */
-    public void playWithModelList(List<SuperPlayerModel> modelList, int playIndex,
+    public void playWithModelList(List<SuperPlayerModel> modelList,
+                                  int playIndex,
                                   @IMediaQueue.MediaQueueLoopMode int queueLoopMode,
                                   SuperPlayerQueueListener mediaQueueListener) {
         SuperLogUtil.d(TAG, "_playWithModelList()......");
@@ -135,6 +136,14 @@ public class SuperAudioPlayer extends MediaPlayer implements IMediaQueue.MediaQu
     public void replay() {
         if (mCurrentPlayerModel != null) {
             playWithModel(mCurrentPlayerModel);
+        }
+    }
+    
+    @Override
+    public void release() {
+        super.release();
+        if (mMediaQueue != null) {
+            mMediaQueue.destroy();
         }
     }
     

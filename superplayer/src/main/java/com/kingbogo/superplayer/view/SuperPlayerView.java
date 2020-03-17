@@ -127,7 +127,7 @@ public class SuperPlayerView extends FrameLayout implements ISuperPlayerView, IP
         }
         // controller
         if (mPlayerController != null) {
-            mPlayerController.onPlayerModeChanged(playerModel.playerMode);
+            mPlayerController.onPlayerDisplayModeChanged(playerModel.displayMode);
             mPlayerController.onPlayerSetTitle(playerModel.title);
         }
     }
@@ -160,7 +160,8 @@ public class SuperPlayerView extends FrameLayout implements ISuperPlayerView, IP
      * @param queueLoopMode      播放的循环模式 @
      * @param mediaQueueListener 对列事件
      */
-    public void playWithModelList(List<SuperPlayerModel> modelList, int playIndex,
+    public void playWithModelList(List<SuperPlayerModel> modelList,
+                                  int playIndex,
                                   @IMediaQueue.MediaQueueLoopMode int queueLoopMode,
                                   SuperPlayerQueueListener mediaQueueListener) {
         SuperLogUtil.d(TAG, "_playWithModelList()......");
@@ -283,7 +284,7 @@ public class SuperPlayerView extends FrameLayout implements ISuperPlayerView, IP
     }
     
     /**
-     * 设置音量
+     * 设置音量，音量值：0.0f ~ 1.0f
      */
     public void setVolume(float volume) {
         if (mMediaPlayer != null) {
@@ -292,7 +293,7 @@ public class SuperPlayerView extends FrameLayout implements ISuperPlayerView, IP
     }
     
     /**
-     * @return 获取音量
+     * @return 获取音量，音量值：0.0f ~ 1.0f
      */
     public float getVolume() {
         if (mMediaPlayer != null) {

@@ -11,7 +11,6 @@ import android.view.View;
 
 import com.kingbogo.superplayer.model.SuperPlayerState;
 import com.kingbogo.superplayer.util.SuperLogUtil;
-import com.kingbogo.superplayer.view.SuperGestureView;
 
 /**
  * <p>
@@ -22,39 +21,39 @@ import com.kingbogo.superplayer.view.SuperGestureView;
  * @date 2019/8/10
  */
 public abstract class GestureController extends BaseController {
-
+    
     private static final String TAG = "GestureController";
-
+    
     private GestureDetector mGestureDetector;
-    private SuperGestureView mGestureView;
-
+//    private SuperGestureView mGestureView;
+    
     private AudioManager mAudioManager;
-
+    
     private int mStreamVolume;
     private float mBrightness;
     private int mPosition;
     private boolean mNeedSeek;
-
+    
     protected boolean mIsNeedGesture;
-
+    
     public GestureController(@NonNull Context context) {
         super(context);
     }
-
+    
     public GestureController(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
-
+    
     public GestureController(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
-
+    
     @Override
     protected void initView() {
         super.initView();
-        mGestureView = new SuperGestureView(getContext());
-        mGestureView.setVisibility(GONE);
-        addView(mGestureView);
+//        mGestureView = new SuperGestureView(getContext());
+//        mGestureView.setVisibility(GONE);
+//        addView(mGestureView);
 //        mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         mGestureDetector = new GestureDetector(getContext(), new MyGestureListener());
         setOnTouchListener(new OnTouchListener() {
@@ -78,17 +77,17 @@ public abstract class GestureController extends BaseController {
 //        }
 //        return super.onTouchEvent(event);
 //    }
-
+    
     /**
      * MyGestureListener
      */
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
-
+        
         private boolean mFirstTouch;
         private boolean mChangePosition;
         private boolean mChangeBrightness;
         private boolean mChangeVolume;
-
+        
         @Override
         public boolean onDown(MotionEvent e) {
             SuperLogUtil.v(TAG, "==> onDown()...");
@@ -96,7 +95,7 @@ public abstract class GestureController extends BaseController {
                     || mCurrentPlayerState == SuperPlayerState.COMPLETED;
             if (mIsShowing) {
                 //if (!isFix) {
-                    hideController();
+                hideController();
                 //}
             } else {
                 showController(false, !isFix);
@@ -114,27 +113,27 @@ public abstract class GestureController extends BaseController {
 //            }
 //            return true;
 //        }
-
+        
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-
-
+            
+            
             return super.onFling(e1, e2, velocityX, velocityY);
         }
-
+        
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-
-
+            
+            
             return super.onScroll(e1, e2, distanceX, distanceY);
         }
-
+        
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            SuperLogUtil.v(TAG, "==> onDoubleTap()...");
-
+            // SuperLogUtil.v(TAG, "==> onDoubleTap()...");
+            
             return super.onDoubleTap(e);
         }
     }
-
+    
 }

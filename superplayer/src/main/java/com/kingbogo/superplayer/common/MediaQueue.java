@@ -37,11 +37,6 @@ public class MediaQueue implements IMediaQueue {
     private int mTrayRePlayCount = 0;
     
     @Override
-    public void init() {
-        mQueue = new ArrayList<>();
-    }
-    
-    @Override
     public void destroy() {
         if (mQueue != null) {
             mQueue.clear();

@@ -26,17 +26,17 @@ import com.kingbogo.superplayer.util.SuperLogUtil;
  * @date 2019/8/31
  */
 public class SuperPlayerController extends GestureController implements SeekBar.OnSeekBarChangeListener {
-
+    
     private static final String TAG = "SuperPlayerController";
-
+    
     // ------------------------------------------ @ Top
-
+    
     private LinearLayout mTopLl;
     private ImageView mTopBackIv;
     private TextView mTopTitleTv;
-
+    
     // ------------------------------------------ @ Bottom
-
+    
     private LinearLayout mBottomLl;
     private ImageView mBottomPlayIv;
     private TextView mBottomCurrentTimeTv;
@@ -44,46 +44,46 @@ public class SuperPlayerController extends GestureController implements SeekBar.
     private TextView mBottomTotalTimeTv;
     private ImageView mBottomFullIv;
     private ProgressBar mBottomProgress;
-
+    
     // ------------------------------------------ @ Center
-
+    
     private FrameLayout mCenterFl;
     private ImageView mCenterPlayIv;
     private ProgressBar mCenterLoadingPb;
-
+    
     // ------------------------------------------ @ Left
-
+    
     private ImageView mLeftLockIv;
-
+    
     // ------------------------------------------ @ Right
-
-
+    
+    
     // ------------------------------------------ others
-
+    
     private boolean mIsTrackingTouch;
-
+    
     // ------------------------------------------ about child use
-
+    
     protected boolean mIsNeedShowLock = true;
     protected boolean mIsNeedShowFull = true;
     protected boolean mIsNeedShowBottomProgress = true;
-
-
+    
+    
     public SuperPlayerController(@NonNull Context context) {
         super(context);
     }
-
+    
     public SuperPlayerController(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
-
+    
     public SuperPlayerController(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
-
+    
     // ------------------------------------------------------------------- @ BaseController
-
-
+    
+    
     @Override
     protected void initView() {
         SuperLogUtil.d(TAG, "_initView()...");
@@ -93,7 +93,7 @@ public class SuperPlayerController extends GestureController implements SeekBar.
         mTopBackIv = mRootView.findViewById(R.id.super_ctrl_top_back_iv);
         mTopBackIv.setOnClickListener(this);
         mTopTitleTv = mRootView.findViewById(R.id.super_ctrl_top_title_tv);
-
+        
         // Bottom
         mBottomLl = mRootView.findViewById(R.id.super_ctrl_bottom_ll);
         mBottomPlayIv = mRootView.findViewById(R.id.super_ctrl_bottom_play_iv);
@@ -105,23 +105,22 @@ public class SuperPlayerController extends GestureController implements SeekBar.
         mBottomFullIv = mRootView.findViewById(R.id.super_ctrl_bottom_full_screen_iv);
         mBottomFullIv.setOnClickListener(this);
         mBottomProgress = mRootView.findViewById(R.id.super_ctrl_bottom_progress);
-
+        
         // Center
         mCenterFl = mRootView.findViewById(R.id.super_ctrl_center_fl);
         mCenterPlayIv = mRootView.findViewById(R.id.super_ctrl_center_play_iv);
         mCenterPlayIv.setOnClickListener(this);
         mCenterLoadingPb = mRootView.findViewById(R.id.super_ctrl_center_loading_pb);
-
+        
         // Left
         mLeftLockIv = mRootView.findViewById(R.id.super_ctrl_left_lock_iv);
     }
-
+    
     @Override
-    protected int getLayoutId() {
-        SuperLogUtil.d(TAG, "_getLayoutId()...");
+    protected int onBaseGetLayoutId() {
         return R.layout.view_super_controller;
     }
-
+    
     @Override
     protected void showController(boolean reset, boolean postFadeOut) {
         super.showController(reset, postFadeOut);
@@ -142,7 +141,7 @@ public class SuperPlayerController extends GestureController implements SeekBar.
             removeFaceOutRunnable();
         }
     }
-
+    
     @Override
     protected void hideController() {
         super.hideController();
@@ -156,9 +155,9 @@ public class SuperPlayerController extends GestureController implements SeekBar.
         // left
         hideLeftViews();
     }
-
+    
     @Override
-    protected void playerProgressChanged() {
+    protected void onBasePlayerProgressChanged() {
         SuperLogUtil.d(TAG, "_playerProgressChanged(), currentDuration: " + mPlayerControl.onCtrlGetCurrentDuration());
         // 更新进度
         if (mPlayerControl == null || mIsTrackingTouch) {
@@ -189,9 +188,9 @@ public class SuperPlayerController extends GestureController implements SeekBar.
         mBottomCurrentTimeTv.setText(stringForTime(currentDuration));
         mBottomTotalTimeTv.setText(stringForTime(totalDuration));
     }
-
+    
     @Override
-    protected void playerStateChanged(SuperPlayerState playerState) {
+    protected void onBasePlayerStateChanged(SuperPlayerState playerState) {
         SuperLogUtil.d(TAG, "_playerStateChanged(), playerState: " + playerState);
         switch (playerState) {
             case IDLE:
@@ -208,7 +207,7 @@ public class SuperPlayerController extends GestureController implements SeekBar.
                     mBottomProgress.setSecondaryProgress(0);
                 }
                 break;
-
+            
             case BUFFERING:
                 showCenterViews(false, true);
                 break;
@@ -216,7 +215,7 @@ public class SuperPlayerController extends GestureController implements SeekBar.
                 showController(false, true);
                 showPlayViews(false);
                 break;
-
+            
             case PLAYING:
                 showPlayViews(false);
                 break;
@@ -224,40 +223,39 @@ public class SuperPlayerController extends GestureController implements SeekBar.
                 showPlayViews(true);
                 showController(false, false);
                 break;
-
+            
             case COMPLETED:
                 showController(false, false);
                 mPlayerControl.onCtrlSetLock(false);
                 break;
-
+            
             case STOPPED:
             case ERROR:
                 showController(false, false);
                 showCenterViews(true, false);
                 showPlayViews(true);
                 break;
-
+            
             default:
                 break;
         }
     }
-
+    
     @Override
-    protected void playerModeChanged(int playerMode) {
-        SuperLogUtil.d(TAG, "_playerModeChanged(), playerMode: " + playerMode);
-        if (playerMode == SuperConstants.PLAYER_MODE_NORMAL) {
+    protected void onBaseDisplayModeChanged(int displayMode) {
+        SuperLogUtil.d(TAG, "_displayModeChanged(), displayMode: " + displayMode);
+        if (displayMode == SuperConstants.DISPLAY_MODE_NORMAL) {
             // TODO 正常模式
-
-
-        } else if (playerMode == SuperConstants.PLAYER_MODE_FULLSCREEN) {
+            
+            
+        } else if (displayMode == SuperConstants.DISPLAY_MODE_FULLSCREEN) {
             // TODO 全屏模式
-
-
+            
         }
     }
-
+    
     @Override
-    protected void playerSetTitle(String title) {
+    protected void onBasePlayerSetTitle(String title) {
         SuperLogUtil.d(TAG, "_playerSetTitle(), title: " + title);
         if (title != null) {
             mTopTitleTv.setText(title);
@@ -265,13 +263,13 @@ public class SuperPlayerController extends GestureController implements SeekBar.
             mTopTitleTv.setText("");
         }
     }
-
+    
     @Override
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.super_ctrl_top_back_iv) {
             // TODO top: 返回
-
+            
         } else if (id == R.id.super_ctrl_bottom_play_iv || id == R.id.super_ctrl_center_play_iv) {
             SuperLogUtil.d(TAG, "_onClick(), you click Play Button...");
             if (mPlayerControl.onCtrlIsPlaying()) {
@@ -291,12 +289,12 @@ public class SuperPlayerController extends GestureController implements SeekBar.
             }
         } else if (id == R.id.super_ctrl_bottom_full_screen_iv) {
             // TODO bottom: 全屏
-
+            
         }
     }
-
+    
     // ------------------------------------------------------------------- @ OnSeekBarChangeListener
-
+    
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         SuperLogUtil.d(TAG, "_onProgressChanged(), progress: " + progress + ", fromUser: " + fromUser);
@@ -308,14 +306,14 @@ public class SuperPlayerController extends GestureController implements SeekBar.
         SuperLogUtil.d(TAG, "_onProgressChanged(), totalDuration: " + totalDuration + ", seekPosition: " + seekPosition);
         mBottomCurrentTimeTv.setText(stringForTime((int) seekPosition));
     }
-
+    
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         SuperLogUtil.d(TAG, "_onStartTrackingTouch()...");
         mIsTrackingTouch = true;
         removeFaceOutRunnable();
     }
-
+    
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         SuperLogUtil.d(TAG, "_onStopTrackingTouch()... seekBar.getProgress(): " + seekBar.getProgress() + ", seekBar.getMax(): " + seekBar.getMax());
@@ -326,29 +324,29 @@ public class SuperPlayerController extends GestureController implements SeekBar.
         mIsTrackingTouch = false;
         showController(false, true);
     }
-
+    
     // ------------------------------------------------------------------- @ protected
-
+    
     /**
      * 显示顶部Views
      */
     protected void showTopViews() {
         mTopLl.setVisibility(VISIBLE);
         mTopTitleTv.setVisibility(VISIBLE);
-        if (mPlayerMode == SuperConstants.PLAYER_MODE_NORMAL) {
+        if (mDisplayMode == SuperConstants.DISPLAY_MODE_NORMAL) {
             mTopBackIv.setVisibility(GONE);
-        } else if (mPlayerMode == SuperConstants.PLAYER_MODE_FULLSCREEN) {
+        } else if (mDisplayMode == SuperConstants.DISPLAY_MODE_FULLSCREEN) {
             mTopBackIv.setVisibility(VISIBLE);
         }
     }
-
+    
     /**
      * 隐藏顶部Views
      */
     protected void hideTopViews() {
         mTopLl.setVisibility(GONE);
     }
-
+    
     /**
      * 显示底部Views
      *
@@ -388,14 +386,14 @@ public class SuperPlayerController extends GestureController implements SeekBar.
             }
         }
     }
-
+    
     /**
      * 隐藏底部Views
      */
     protected void hideBottomViews() {
         mBottomLl.setVisibility(GONE);
     }
-
+    
     /**
      * 显示中间Views
      *
@@ -407,21 +405,21 @@ public class SuperPlayerController extends GestureController implements SeekBar.
         mCenterPlayIv.setVisibility(isShowPlay ? VISIBLE : GONE);
         mCenterLoadingPb.setVisibility(isShowLoading ? VISIBLE : GONE);
     }
-
+    
     /**
      * 显示中间Views
      */
     protected void showCenterViews() {
         mCenterFl.setVisibility(VISIBLE);
     }
-
+    
     /**
      * 隐藏中间Views
      */
     protected void hideCenterViews() {
         mCenterFl.setVisibility(GONE);
     }
-
+    
     /**
      * 显示左边Views
      *
@@ -435,14 +433,14 @@ public class SuperPlayerController extends GestureController implements SeekBar.
             }
         }
     }
-
+    
     /**
      * 隐藏左边Views
      */
     protected void hideLeftViews() {
         mLeftLockIv.setVisibility(GONE);
     }
-
+    
     /**
      * 显示播放Views
      *
@@ -454,19 +452,19 @@ public class SuperPlayerController extends GestureController implements SeekBar.
         showCenterViews(true, false);
         mCenterPlayIv.setSelected(!isPlayIcon);
     }
-
+    
     // ------------------------------------------------------------------- @ private
-
-
+    
+    
     private void postFadeOutRunnable() {
         removeFaceOutRunnable();
         if (mDefaultTimeout != 0) {
             postDelayed(getFadeOutRunnable(), mDefaultTimeout);
         }
     }
-
+    
     private void removeFaceOutRunnable() {
         removeCallbacks(getFadeOutRunnable());
     }
-
+    
 }

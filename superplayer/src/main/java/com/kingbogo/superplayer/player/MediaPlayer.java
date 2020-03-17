@@ -24,6 +24,9 @@ import com.kingbogo.superplayer.util.SuperLogUtil;
  */
 public class MediaPlayer implements MediaPlayerListener {
     
+    private static final float VOLUME_MIN = 0.0f;
+    private static final float VOLUME_MAX = 1.0f;
+    
     private static final String TAG = "MediaPlayer";
     
     private IPlayer mPlayer;
@@ -189,7 +192,7 @@ public class MediaPlayer implements MediaPlayerListener {
      */
     public void setMute(boolean isMute) {
         if (mPlayer != null) {
-            mPlayer.setVolume(isMute ? 0.0f : 1.0f);
+            mPlayer.setVolume(isMute ? VOLUME_MIN : VOLUME_MAX);
         }
     }
     
@@ -198,22 +201,28 @@ public class MediaPlayer implements MediaPlayerListener {
      */
     public boolean isMute() {
         if (mPlayer != null) {
-            return mPlayer.getVolume() == 0.0f;
+            return mPlayer.getVolume() == VOLUME_MIN;
         }
         return false;
     }
     
     /**
-     * 设置音量
+     * 设置音量，音量值：0.0f~1.0f
      */
     public void setVolume(float volume) {
         if (mPlayer != null) {
+            if (volume < VOLUME_MIN) {
+                volume = VOLUME_MIN;
+            }
+            if (volume > VOLUME_MAX) {
+                volume = VOLUME_MAX;
+            }
             mPlayer.setVolume(volume);
         }
     }
     
     /**
-     * @return 获取音量
+     * @return 获取音量，音量值：0.0f~1.0f
      */
     public float getVolume() {
         if (mPlayer != null) {

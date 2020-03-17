@@ -20,8 +20,6 @@ import java.util.List;
  */
 public interface IMediaQueue {
     
-    void init();
-    
     void destroy();
     
     void update(List<SuperPlayerModel> data);
