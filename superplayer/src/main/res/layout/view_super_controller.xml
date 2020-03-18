@@ -11,8 +11,8 @@
         android:layout_gravity="top"
         android:background="@drawable/super_bg_shape_controller_top"
         android:gravity="center_vertical"
-        android:visibility="gone"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/super_ctrl_top_back_iv"
@@ -48,10 +48,10 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_gravity="bottom"
-        android:visibility="gone"
         android:background="@drawable/super_bg_shape_controller_bottom"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/super_ctrl_bottom_play_iv"
@@ -72,7 +72,7 @@
         <SeekBar
             android:id="@+id/super_ctrl_bottom_seek_bar"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
@@ -80,11 +80,14 @@
             android:background="@null"
             android:max="100"
             android:maxHeight="2dp"
+            android:minHeight="2dp"
             android:paddingStart="0dp"
             android:paddingEnd="0dp"
             android:progressDrawable="@drawable/super_img_progress_bar"
+            android:splitTrack="false"
             android:thumb="@drawable/super_img_seekbar"
-            android:thumbOffset="0dp" />
+            android:thumbOffset="0dp"
+            tools:targetApi="lollipop" />
 
         <TextView
             android:id="@+id/super_ctrl_bottom_total_time_tv"
@@ -114,16 +117,16 @@
         android:progress="0"
         android:progressDrawable="@drawable/super_img_progress_bar"
         android:visibility="gone"
-        tools:progress="50"/>
+        tools:progress="50" />
 
 
     <!-- Center -->
 
     <FrameLayout
         android:id="@+id/super_ctrl_center_fl"
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
 
         <ImageView
             android:id="@+id/super_ctrl_center_play_iv"
@@ -152,9 +155,9 @@
         android:id="@+id/super_ctrl_left_lock_iv"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:padding="10dp"
         android:layout_gravity="center_vertical|start"
         android:layout_marginStart="15dp"
+        android:padding="10dp"
         android:src="@drawable/super_selector_action_lock"
         android:visibility="gone"
         tools:ignore="ContentDescription" />

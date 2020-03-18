@@ -131,6 +131,13 @@ public class SuperAudioPlayer extends MediaPlayer implements IMediaQueue.MediaQu
     }
     
     /**
+     * @return 媒体对列
+     */
+    public IMediaQueue getMediaQueue() {
+        return mMediaQueue;
+    }
+    
+    /**
      * 重播
      */
     public void replay() {
@@ -150,12 +157,13 @@ public class SuperAudioPlayer extends MediaPlayer implements IMediaQueue.MediaQu
     //------------------------------------------------ @ IMediaQueue.MediaQueueListener
     
     @Override
-    public void onQueueCurrentIndexUpdate(int index, SuperPlayerModel playerModel) {
+    public void onQueueCurrentIndexUpdate(int index, boolean isInteriorTry, SuperPlayerModel playerModel) {
         SuperLogUtil.i(TAG, "_onQueueCurrentIndexUpdate(), index: " + index + ", playerModel: " + playerModel);
         if (playerModel != null) {
             playWithModel(playerModel);
         }
-        if (mMediaQueueListener != null) {
+        if (!isInteriorTry && mMediaQueueListener != null) {
+            // 内部重试时：不需要通知外部
             mMediaQueueListener.onSuperPlayerQueueIndexUpdate(index, playerModel);
         }
     }

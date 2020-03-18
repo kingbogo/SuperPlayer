@@ -100,6 +100,8 @@ public class SuperPlayerController extends GestureController implements SeekBar.
         mBottomPlayIv.setOnClickListener(this);
         mBottomCurrentTimeTv = mRootView.findViewById(R.id.super_ctrl_bottom_current_time_tv);
         mBottomSeekBar = mRootView.findViewById(R.id.super_ctrl_bottom_seek_bar);
+        mBottomSeekBar.setPadding(0, 0, 0, 0);
+        mBottomSeekBar.setThumbOffset(0);
         mBottomSeekBar.setOnSeekBarChangeListener(this);
         mBottomTotalTimeTv = mRootView.findViewById(R.id.super_ctrl_bottom_total_time_tv);
         mBottomFullIv = mRootView.findViewById(R.id.super_ctrl_bottom_full_screen_iv);

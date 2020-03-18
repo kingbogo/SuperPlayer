@@ -34,7 +34,7 @@ public class MediaQueue implements IMediaQueue {
     private int mLoopMode = SuperConstants.MEDIA_QUEUE_MODE_LIST_ONCE;
     
     /** 播放出错时：重试的次数 */
-    private int mTrayRePlayCount = 0;
+    private int mTryRePlayCount = 0;
     
     @Override
     public void destroy() {
@@ -132,13 +132,7 @@ public class MediaQueue implements IMediaQueue {
     
     @Override
     public boolean skipToIndex(int index) {
-        SuperPlayerModel playerModel = getMediaModelByIndex(index);
-        if (playerModel != null) {
-            mCurrentIndex = index;
-            notifyQueueCurrentIndexUpdate(index, playerModel);
-            return true;
-        }
-        return false;
+        return skipToIndex(index, false);
     }
     
     @Override
@@ -196,23 +190,39 @@ public class MediaQueue implements IMediaQueue {
             }
         } else if (playerState == SuperPlayerState.ERROR) {
             // 【播放错误】：重试3次
-            SuperLogUtil.d(TAG, "_onPlayerStateChanged(), 播放出错，重试，mTrayRePlayCount: " + mTrayRePlayCount);
-            if (mTrayRePlayCount < RE_PLAY_MAX_COUNT) {
-                mTrayRePlayCount++;
-                skipToIndex(mCurrentIndex);
+            SuperLogUtil.d(TAG, "_onPlayerStateChanged(), 播放出错，重试，mTryRePlayCount: " + mTryRePlayCount);
+            if (mTryRePlayCount < RE_PLAY_MAX_COUNT) {
+                mTryRePlayCount++;
+                skipToIndex(mCurrentIndex, true);
             }
         } else if (playerState == SuperPlayerState.PLAYING) {
             // 【播放中】：重试清0
-            mTrayRePlayCount = 0;
+            mTryRePlayCount = 0;
         }
     }
     
     // --------------------------------------------------------------------- @ private
     
-    private void notifyQueueCurrentIndexUpdate(int index, SuperPlayerModel playerModel) {
+    private void notifyQueueCurrentIndexUpdate(int index, boolean isInteriorTry, SuperPlayerModel playerModel) {
         if (mListener != null) {
-            mListener.onQueueCurrentIndexUpdate(index, playerModel);
+            mListener.onQueueCurrentIndexUpdate(index, isInteriorTry, playerModel);
         }
+    }
+    
+    /**
+     * @param index         播放序列
+     * @param isInteriorTry 是否是内部重试
+     *
+     * @return 成功/失败
+     */
+    private boolean skipToIndex(int index, boolean isInteriorTry) {
+        SuperPlayerModel playerModel = getMediaModelByIndex(index);
+        if (playerModel != null) {
+            mCurrentIndex = index;
+            notifyQueueCurrentIndexUpdate(index, isInteriorTry, playerModel);
+            return true;
+        }
+        return false;
     }
     
 }

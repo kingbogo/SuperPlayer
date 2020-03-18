@@ -78,10 +78,11 @@ public interface IMediaQueue {
         /**
          * 队列中当前播放的序号更新
          *
-         * @param index       当前播放的序列
-         * @param playerModel 播放对象
+         * @param index         当前播放的序列
+         * @param isInteriorTry 是否是内部重试
+         * @param playerModel   播放对象
          */
-        void onQueueCurrentIndexUpdate(int index, SuperPlayerModel playerModel);
+        void onQueueCurrentIndexUpdate(int index, boolean isInteriorTry, SuperPlayerModel playerModel);
         
     }
     
