@@ -124,8 +124,8 @@ public class SuperPlayerController extends GestureController implements SeekBar.
     }
     
     @Override
-    protected void showController(boolean reset, boolean postFadeOut) {
-        super.showController(reset, postFadeOut);
+    protected void showController(boolean isAnim, boolean reset, boolean postFadeOut) {
+        super.showController(isAnim, reset, postFadeOut);
         SuperLogUtil.d(TAG, "_showController(), reset: " + reset + ", postFadeOut: " + postFadeOut);
         // top
         showTopViews();
@@ -145,8 +145,8 @@ public class SuperPlayerController extends GestureController implements SeekBar.
     }
     
     @Override
-    protected void hideController() {
-        super.hideController();
+    protected void hideController(boolean isAnim) {
+        super.hideController(isAnim);
         SuperLogUtil.d(TAG, "_hideController()...");
         // top
         hideTopViews();
@@ -199,7 +199,7 @@ public class SuperPlayerController extends GestureController implements SeekBar.
                 mIsLocked = false;
                 break;
             case PREPARING:
-                showController(true, true);
+                showController(false, true, true);
                 showCenterViews(false, true);
                 break;
             case PREPARED:
@@ -214,7 +214,7 @@ public class SuperPlayerController extends GestureController implements SeekBar.
                 showCenterViews(false, true);
                 break;
             case BUFFERED:
-                showController(false, true);
+                showController(false, false, true);
                 showPlayViews(false);
                 break;
             
@@ -223,17 +223,17 @@ public class SuperPlayerController extends GestureController implements SeekBar.
                 break;
             case PAUSED:
                 showPlayViews(true);
-                showController(false, false);
+                showController(false, false, false);
                 break;
             
             case COMPLETED:
-                showController(false, false);
+                showController(false, false, false);
                 mPlayerControl.onCtrlSetLock(false);
                 break;
             
             case STOPPED:
             case ERROR:
-                showController(false, false);
+                showController(false, false, false);
                 showCenterViews(true, false);
                 showPlayViews(true);
                 break;
@@ -282,7 +282,7 @@ public class SuperPlayerController extends GestureController implements SeekBar.
                 // 其它则播放
                 if (mCurrentPlayerState == SuperPlayerState.PAUSED) {
                     // 继续播放
-                    showController(false, true);
+                    showController(false, false, true);
                     mPlayerControl.onCtrlResume();
                 } else {
                     // 重播
@@ -324,7 +324,7 @@ public class SuperPlayerController extends GestureController implements SeekBar.
         SuperLogUtil.d(TAG, "_onStopTrackingTouch(), totalDuration: " + totalDuration + ", seekPosition: " + seekPosition);
         mPlayerControl.onCtrlSeekTo(seekPosition);
         mIsTrackingTouch = false;
-        showController(false, true);
+        showController(false, false, true);
     }
     
     // ------------------------------------------------------------------- @ protected
@@ -453,20 +453,6 @@ public class SuperPlayerController extends GestureController implements SeekBar.
         mBottomPlayIv.setSelected(!isPlayIcon);
         showCenterViews(true, false);
         mCenterPlayIv.setSelected(!isPlayIcon);
-    }
-    
-    // ------------------------------------------------------------------- @ private
-    
-    
-    private void postFadeOutRunnable() {
-        removeFaceOutRunnable();
-        if (mDefaultTimeout != 0) {
-            postDelayed(getFadeOutRunnable(), mDefaultTimeout);
-        }
-    }
-    
-    private void removeFaceOutRunnable() {
-        removeCallbacks(getFadeOutRunnable());
     }
     
 }

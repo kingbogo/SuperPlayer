@@ -34,7 +34,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     
     private void initView() {
         superPlayerView = findViewById(R.id.player_super_player_view);
-        superPlayerView.setSuperPlayerModel(new SuperPlayerModel(Constants.VIDEO_URL_3, TAG, "我是标题3"));
+//        superPlayerView.setSuperPlayerModel(new SuperPlayerModel(Constants.VIDEO_URL_3, TAG, "我是标题3"));
         superPlayerView.setPlayerController(new SuperPlayerController(this));
         
         findViewById(R.id.player_play_1_btn).setOnClickListener(this);

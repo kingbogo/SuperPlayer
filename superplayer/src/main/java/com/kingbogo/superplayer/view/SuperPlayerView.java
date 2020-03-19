@@ -166,6 +166,7 @@ public class SuperPlayerView extends FrameLayout implements ISuperPlayerView, IP
                                   SuperPlayerQueueListener mediaQueueListener) {
         SuperLogUtil.d(TAG, "_playWithModelList()......");
         if (!CheckUtil.isEmpty(modelList)) {
+            initPlayer();
             mMediaQueueListener = mediaQueueListener;
             if (mMediaQueue == null) {
                 mMediaQueue = new MediaQueue();
@@ -500,6 +501,13 @@ public class SuperPlayerView extends FrameLayout implements ISuperPlayerView, IP
             LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             mRootView.addView(mPlayerController, layoutParams);
         }
+    }
+    
+    /**
+     * @return 控制器
+     */
+    public BaseController getPlayerController() {
+        return mPlayerController;
     }
     
     // ------------------------------------------------------------- @ protected

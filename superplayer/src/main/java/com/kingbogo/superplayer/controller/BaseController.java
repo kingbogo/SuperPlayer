@@ -126,7 +126,7 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
         mCurrentPlayerState = playerState;
         onBasePlayerStateChanged(playerState);
         if (playerState == SuperPlayerState.ERROR) {
-            hideController();
+            hideController(true);
             showTipsView(getResources().getString(R.string.super_tips_play_error), getResources().getString(R.string.super_tips_replay));
         } else {
             if (playerState == SuperPlayerState.COMPLETED) {
@@ -166,19 +166,22 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
     /**
      * 显示控制器
      *
+     * @param isAnim      是否动画
      * @param reset       是否重置
      * @param postFadeOut 是否发送FadeOut
      */
     @CallSuper
-    protected void showController(boolean reset, boolean postFadeOut) {
+    protected void showController(boolean isAnim, boolean reset, boolean postFadeOut) {
         mIsShowing = true;
     }
     
     /**
      * 隐藏控制器
+     *
+     * @param isAnim 是否动画
      */
     @CallSuper
-    protected void hideController() {
+    protected void hideController(boolean isAnim) {
         mIsShowing = false;
     }
     
@@ -358,12 +361,25 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
         }
     }
     
+    
+    protected void postFadeOutRunnable() {
+        removeFaceOutRunnable();
+        if (mDefaultTimeout != 0) {
+            postDelayed(getFadeOutRunnable(), mDefaultTimeout);
+        }
+    }
+    
+    protected void removeFaceOutRunnable() {
+        removeCallbacks(getFadeOutRunnable());
+    }
+    
+    
     // ------------------------------------------------------------------------ @ others
     
     private class FadeOutRunnable implements Runnable {
         @Override
         public void run() {
-            hideController();
+            hideController(true);
         }
     }
     

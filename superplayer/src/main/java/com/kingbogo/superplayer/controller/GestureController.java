@@ -56,7 +56,7 @@ public abstract class GestureController extends BaseController {
 //        addView(mGestureView);
 //        mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         mGestureDetector = new GestureDetector(getContext(), new MyGestureListener());
-        setOnTouchListener(new OnTouchListener() {
+        mRootView.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 return mGestureDetector.onTouchEvent(event);
@@ -96,10 +96,10 @@ public abstract class GestureController extends BaseController {
                         || mCurrentPlayerState == SuperPlayerState.COMPLETED;
                 if (mIsShowing) {
                     //if (!isFix) {
-                    hideController();
+                    hideController(true);
                     //}
                 } else {
-                    showController(false, !isFix);
+                    showController(true, false, !isFix);
                 }
             }
             return super.onDown(e);
