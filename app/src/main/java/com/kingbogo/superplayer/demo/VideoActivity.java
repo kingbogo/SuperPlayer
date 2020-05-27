@@ -20,7 +20,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
 
     private SuperPlayerView superPlayerView;
 
-//    private Fragment1 fragment1;
+    private Fragment1 fragment1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +58,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.video_play_is_playing_btn).setOnClickListener(this);
         findViewById(R.id.video_play_fragment_btn).setOnClickListener(this);
 
-//        fragment1 = Fragment1.newInstance("Fragment中播放");
-//        getSupportFragmentManager().beginTransaction().add(R.id.video_container, fragment1).commit();
+        fragment1 = Fragment1.newInstance("Fragment中播放");
+        getSupportFragmentManager().beginTransaction().add(R.id.video_container, fragment1).commit();
 
     }
 
@@ -205,9 +205,9 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
                 toast(logInfo);
                 break;
 
-//            case R.id.video_play_fragment_btn:
-//                fragment1.play();
-//                break;
+            case R.id.video_play_fragment_btn:
+                fragment1.play();
+                break;
 
             default:
                 break;

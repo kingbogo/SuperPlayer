@@ -1,6 +1,7 @@
 package com.kingbogo.superplayer.demo;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -22,6 +23,8 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
     private static final String TAG = "AudioActivity";
     
     private SuperAudioPlayer superAudioPlayer;
+
+    private AudioFragment audioFragment;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,8 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         initView();
         
         superAudioPlayer = new SuperAudioPlayer(this);
+
+        audioFragment = AudioFragment.newInstance();
     }
     
     private void initView() {
@@ -49,6 +54,8 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.audio_play_is_playing_btn).setOnClickListener(this);
         
         findViewById(R.id.audio_play_list_btn).setOnClickListener(this);
+
+        findViewById(R.id.audio_play_fragment_btn).setOnClickListener(this);
     }
     
     @Override
@@ -157,6 +164,16 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
                 modelList.add(new SuperPlayerModel(Constants.VIDEO_URL_4, TAG, "列表4"));
                 superAudioPlayer.playWithModelList(modelList, 0, SuperConstants.MEDIA_QUEUE_MODE_LIST_LOOP, this);
                 break;
+
+            case R.id.audio_play_fragment_btn:{
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                if (!audioFragment.isAdded()) {
+                    transaction.add(R.id.audio_fl, audioFragment, audioFragment.getClass().getName());
+                }
+                transaction.commitAllowingStateLoss();
+
+                break;
+            }
             
             default:
                 break;
