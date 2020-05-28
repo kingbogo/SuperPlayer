@@ -7,6 +7,5 @@
  ```
  implementation 'com.github.kingbogo:superplayer:{version}'
  ```
- 
- 
- 1.4.0及以上版本支持androidx，support版本请使用1.3.2版本
+
+* *1.4.0及以上版本支持androidx，support版本请使用1.3.2版本*
