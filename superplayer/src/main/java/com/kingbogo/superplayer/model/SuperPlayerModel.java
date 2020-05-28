@@ -1,6 +1,6 @@
 package com.kingbogo.superplayer.model;
 
-import android.support.annotation.DrawableRes;
+import androidx.annotation.DrawableRes;
 
 import com.kingbogo.superplayer.listener.SuperPlayerListener;
 

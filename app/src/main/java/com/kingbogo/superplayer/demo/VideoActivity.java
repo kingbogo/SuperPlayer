@@ -1,9 +1,10 @@
 package com.kingbogo.superplayer.demo;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.kingbogo.superplayer.demo.util.Constants;
 import com.kingbogo.superplayer.listener.SuperPlayerListener;
@@ -96,7 +97,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
                 playerModel2.tag = "Test2";
                 playerModel2.isNeedProgressCallback = true;
                 playerModel2.setPlayerListener(this);
-                playerModel2.startPlayPositionMs = 500 * 1000;
+                playerModel2.startPlayPositionMs = 1500;
                 superPlayerView.playWithModel(playerModel2);
                 break;
 

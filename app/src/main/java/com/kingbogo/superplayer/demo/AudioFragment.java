@@ -1,22 +1,19 @@
 package com.kingbogo.superplayer.demo;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.kingbogo.superplayer.listener.SuperPlayerListener;
 import com.kingbogo.superplayer.model.SuperPlayerModel;
 import com.kingbogo.superplayer.model.SuperPlayerState;
 import com.kingbogo.superplayer.player.SuperAudioPlayer;
 import com.kingbogo.superplayer.util.SuperLogUtil;
-import com.kingbogo.superplayer.view.SuperPlayerView;
 
 /**
  * <p>
@@ -28,7 +25,6 @@ import com.kingbogo.superplayer.view.SuperPlayerView;
 public class AudioFragment extends Fragment {
 
     private static final String TAG = "AudioFragment";
-
 
     private SuperAudioPlayer mSuperAudionPlayer;
 

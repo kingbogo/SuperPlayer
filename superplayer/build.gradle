@@ -6,14 +6,14 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 32
-        versionName "1.3.2"
+        versionCode 40
+        versionName "1.4.0"
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     api 'com.google.android.exoplayer:exoplayer-core:2.10.4'
 }
 

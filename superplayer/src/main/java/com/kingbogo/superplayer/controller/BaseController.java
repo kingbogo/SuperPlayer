@@ -1,13 +1,14 @@
 package com.kingbogo.superplayer.controller;
 
 import android.content.Context;
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.kingbogo.superplayer.R;
 import com.kingbogo.superplayer.common.IPlayerControl;
@@ -30,42 +31,42 @@ import java.util.Locale;
  * @date 2019/8/10
  */
 public abstract class BaseController extends FrameLayout implements View.OnClickListener {
-    
+
     public static final String TIME_INIT = "00:00";
-    
+
     protected View mRootView;
     protected IPlayerControl mPlayerControl;
-    
+
     /**
      * 是否已上锁
      */
     protected boolean mIsLocked;
     protected int mDefaultTimeout = 3800;
-    
+
     private StringBuilder mFormatBuilder;
     private Formatter mFormatter;
-    
+
     private SuperTipsView mTipsView;
     private SuperIconView mIconView;
     private FadeOutRunnable mFadeOutRunnable;
-    
+
     protected SuperPlayerState mCurrentPlayerState;
     protected int mDisplayMode = SuperConstants.DISPLAY_MODE_NORMAL;
     protected boolean mIsShowing;
-    
+
     public BaseController(@NonNull Context context) {
         this(context, null);
     }
-    
+
     public BaseController(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
-    
+
     public BaseController(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initView();
     }
-    
+
     protected void initView() {
         setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mRootView = LayoutInflater.from(getContext()).inflate(onBaseGetLayoutId(), this);
@@ -74,51 +75,51 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
         mTipsView = new SuperTipsView(getContext());
         mIconView = new SuperIconView(getContext());
     }
-    
+
     // ------------------------------------------------------------------------ @ abstract
-    
+
     /**
      * 布局文件
      *
      * @return 布局
      */
     protected abstract int onBaseGetLayoutId();
-    
+
     /**
      * 播放器进度变化
      */
     protected abstract void onBasePlayerProgressChanged();
-    
+
     /**
      * 播放器状态变化
      *
      * @param playerState 播放器状态
      */
     protected abstract void onBasePlayerStateChanged(SuperPlayerState playerState);
-    
+
     /**
      * 显示模式变化
      *
      * @param playerMode 显示模式
      */
     protected abstract void onBaseDisplayModeChanged(int playerMode);
-    
+
     /**
      * 设置标题
      *
      * @param title 标题
      */
     protected abstract void onBasePlayerSetTitle(String title);
-    
+
     // ------------------------------------------------------------------------ @ public
-    
+
     /**
      * 外部：设置控制器
      */
     public void setPlayerControl(IPlayerControl playerControl) {
         mPlayerControl = playerControl;
     }
-    
+
     /**
      * 外部：状态变化
      */
@@ -137,14 +138,14 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
             hideTipsView();
         }
     }
-    
+
     /**
      * 外部：进度变化
      */
     public void onPlayerProgressChanged() {
         onBasePlayerProgressChanged();
     }
-    
+
     /**
      * 外部：显示模式变化
      */
@@ -152,17 +153,17 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
         mDisplayMode = displayMode;
         onBaseDisplayModeChanged(displayMode);
     }
-    
+
     /**
      * 外部：设置标题
      */
     public void onPlayerSetTitle(String title) {
         onBasePlayerSetTitle(title);
     }
-    
-    
+
+
     // ------------------------------------------------------------------------ @ protected
-    
+
     /**
      * 显示控制器
      *
@@ -174,7 +175,7 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
     protected void showController(boolean isAnim, boolean reset, boolean postFadeOut) {
         mIsShowing = true;
     }
-    
+
     /**
      * 隐藏控制器
      *
@@ -184,7 +185,7 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
     protected void hideController(boolean isAnim) {
         mIsShowing = false;
     }
-    
+
     /**
      * 显示 tips (比如播放错误)
      */
@@ -204,14 +205,14 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
         }
         addView(mTipsView);
     }
-    
+
     /**
      * 隐藏 tips
      */
     protected void hideTipsView() {
         removeView(mTipsView);
     }
-    
+
     /**
      * 显示 重播按钮
      */
@@ -226,31 +227,31 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
         });
         addView(mIconView);
     }
-    
+
     /**
      * 隐藏 重播按钮
      */
     protected void hideReplayIconView() {
         removeView(mIconView);
     }
-    
+
     protected FadeOutRunnable getFadeOutRunnable() {
         if (mFadeOutRunnable == null) {
             mFadeOutRunnable = new FadeOutRunnable();
         }
         return mFadeOutRunnable;
     }
-    
+
     /**
      * 格式化时间
      */
     protected String stringForTime(long timeMs) {
         long totalSeconds = timeMs / 1000L;
-        
+
         long seconds = totalSeconds % 60;
         long minutes = (totalSeconds / 60) % 60;
         long hours = totalSeconds / 3600;
-        
+
         mFormatBuilder.setLength(0);
         if (hours > 0) {
             return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
@@ -258,9 +259,9 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
             return mFormatter.format("%02d:%02d", minutes, seconds).toString();
         }
     }
-    
+
     // ------------------------------------------------------------------------ @ anim
-    
+
     /**
      * 动画显示/隐藏上边的 View
      *
@@ -280,7 +281,7 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
             });
         }
     }
-    
+
     /**
      * 动画显示/隐藏下边的 View
      *
@@ -300,7 +301,7 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
             });
         }
     }
-    
+
     /**
      * 动画显示/隐藏左边的 View
      *
@@ -320,7 +321,7 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
             });
         }
     }
-    
+
     /**
      * 动画显示/隐藏右边的 View
      *
@@ -340,7 +341,7 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
             });
         }
     }
-    
+
     /**
      * 动画显示/隐藏上边的 View
      *
@@ -360,27 +361,27 @@ public abstract class BaseController extends FrameLayout implements View.OnClick
             });
         }
     }
-    
-    
+
+
     protected void postFadeOutRunnable() {
         removeFaceOutRunnable();
         if (mDefaultTimeout != 0) {
             postDelayed(getFadeOutRunnable(), mDefaultTimeout);
         }
     }
-    
+
     protected void removeFaceOutRunnable() {
         removeCallbacks(getFadeOutRunnable());
     }
-    
-    
+
+
     // ------------------------------------------------------------------------ @ others
-    
+
     private class FadeOutRunnable implements Runnable {
         @Override
         public void run() {
             hideController(true);
         }
     }
-    
+
 }
