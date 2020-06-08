@@ -205,6 +205,22 @@ public class SuperPlayerView extends FrameLayout implements ISuperPlayerView, IP
     }
 
     /**
+     * 重播
+     *
+     * @param startTimeMs 开始时间
+     */
+    public void replay(long startTimeMs) {
+        SuperLogUtil.v(TAG, "_replay()...... startTimeMs: " + startTimeMs);
+        if (mMediaPlayer != null) {
+            SuperPlayerModel playerModel = mMediaPlayer.getCurrentPlayerModel();
+            if (playerModel != null) {
+                playerModel.startPlayPositionMs = startTimeMs;
+                playWithModel(playerModel);
+            }
+        }
+    }
+
+    /**
      * 重播：seek方式
      */
     public void replay4Seek() {
@@ -219,6 +235,7 @@ public class SuperPlayerView extends FrameLayout implements ISuperPlayerView, IP
     public void seek(long seekTime) {
         if (mMediaPlayer != null) {
             mMediaPlayer.seek(seekTime);
+            postProgressRunnable(1000L);
         }
     }
 
@@ -228,6 +245,7 @@ public class SuperPlayerView extends FrameLayout implements ISuperPlayerView, IP
     public void seek4Ms(long seekTime) {
         if (mMediaPlayer != null) {
             mMediaPlayer.seek4Ms(seekTime);
+            postProgressRunnable(1000L);
         }
     }
 
@@ -583,6 +601,11 @@ public class SuperPlayerView extends FrameLayout implements ISuperPlayerView, IP
 
     private void postProgressRunnable() {
         SuperLogUtil.v(TAG, "_postProgressRunnable()...");
+        postProgressRunnable(0L);
+    }
+
+    private void postProgressRunnable(long delayMs) {
+        SuperLogUtil.v(TAG, "_postProgressRunnable()... delayMs: " + delayMs);
         if (mMediaPlayer != null) {
             SuperPlayerModel playerModel = mMediaPlayer.getCurrentPlayerModel();
             if (playerModel != null && playerModel.isNeedProgressCallback) {
@@ -590,7 +613,11 @@ public class SuperPlayerView extends FrameLayout implements ISuperPlayerView, IP
                     mProgressRunnable = new SuperPlayerView.ProgressRunnable();
                 }
                 removeProgressRunnable();
-                post(mProgressRunnable);
+                if (delayMs > 0L) {
+                    postDelayed(mProgressRunnable, delayMs);
+                } else {
+                    post(mProgressRunnable);
+                }
             }
         }
     }
